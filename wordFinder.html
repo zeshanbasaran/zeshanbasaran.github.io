@@ -1,0 +1,122 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Word Finder - Portfolio by Zeshan Basaran</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+								<header id="header">
+									<ul class="icons">
+										<li><a href="https://www.linkedin.com/in/zeshanbasaran" class="icon brands fa-linkedin"><span class="label">LinkedIn</span></a></li>
+										<li><a href="https://www.github.com/zeshanbasaran" class="icon brands fa-github"><span class="label">Github</span></a></li>
+										<li><a href="https://www.twitter.com/ZeshanBasaran" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+										<li><a href="https://join.slack.com/t/zeshanbasaran/shared_invite/zt-1mndmo82q-m9vbKqtflzb7~j0EbiHgYQ" class="icon brands fa-slack"><span class="label">Slack</span></a></li>
+									</ul>
+								</header>
+
+							<!-- Content -->
+								<section>
+									<header class="main">
+										<h1>wordFinder</h1>
+									</header>
+
+									<hr class="major" />
+									<h2>Introduction</h2>
+									<p>wordFinder was created as an extra credit assignment for my COSC 175 class. The C++ script searches for a user-given word within a .txt file in this format</p>
+										<span class="image objectt"></span>
+										<img src="images/format.png" width = "80%" height = auto alt="" />
+									<p>and outputs what line numbers the word was found in.</p>
+										<span class="image objectt"></span>
+										<img src="images/output.png" width = "80%" height = auto alt="" />
+									<p>If the file can't be found, the user is asked to try again.</p>
+										<span class="image objectt"></span>
+										<img src="images/files.png" width = "80%" height = auto alt="" />
+										<span class="image objectt"></span>
+										<img src="images/noFile.png" width = "80%" height = auto alt="" />
+									<p>The algorithm works by adding 1 to the variable lineNum every time a letter is checked to keep track of what line number is being read. If the first letter matches, is is considered the starting line. If every other line after that matches to create the target word, the last line number is considered the ending line. If the word is not complete, and a non-matching character is checked, the variable indexWord is brought back to 0, so a new starting line may be found.</p>
+										<span class="image objectt"></span>
+										<img src="images/muchoIfs.png" width = "80%" height = auto alt="" />
+
+									<hr class="major" />
+									<h2>Credits</h2>
+									<ul>
+									<li><p>Assignment and .txt files created by Nick Winner from Towson University</p></li>
+									</ul>
+
+									<p>Full Code File: <a href="https://github.com/zeshanbasaran/wordFinder">movieSentimentAnalysis</a></p>
+
+								</section>
+
+						</div>
+					</div>
+
+				<!-- Sidebar -->
+					<div id="sidebar">
+						<div class="inner">
+
+							<!-- Search -->
+								<section id="search" class="alt">
+									<form method="post" action="#">
+										<input type="text" name="query" id="query" placeholder="Search" />
+									</form>
+								</section>
+
+							<!-- Menu -->
+								<nav id="menu">
+									<header class="major">
+										<h2>Menu</h2>
+									</header>
+									<ul>
+										<li><a href="index.html">Homepage</a></li>
+										<li><a href="aboutMe.html">About Me</a></li>
+										<li>
+											<span class="opener">Projects</span>
+											<ul>
+												<li><a href="wordFinder.html">wordFinder</a></li>
+												<li><a href="movieSentimentAnalysis.html">movieSentimentAnalysis</a></li>
+											</ul>
+										</li>
+									</ul>
+								</nav>
+
+							<!-- Section -->
+							<section>
+								<header class="major">
+									<h2>Get in Touch</h2>
+								</header>
+								<p>Feel free to reach me by email with any questions, comments, or oppoutunities!</p>
+								<ul class="contact">
+									<li class="icon solid fa-envelope"><a href="mailto:zeshan.basaran@gmail.com">zeshan.basaran@gmail.com</a></li>
+								</ul>
+							</section>
+
+						<!-- Footer -->
+							<footer id="footer">
+								<p class="copyright">&copy; 2023 Zeshan Basaran.</p>
+							</footer>
+
+					</div>
+				</div>
+
+		</div>
+
+	<!-- Scripts -->
+		<script src="assets/js/jquery.min.js"></script>
+		<script src="assets/js/browser.min.js"></script>
+		<script src="assets/js/breakpoints.min.js"></script>
+		<script src="assets/js/util.js"></script>
+		<script src="assets/js/main.js"></script>
+
+</body>
+</html>
