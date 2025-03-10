@@ -1,0 +1,143 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Movie Sentiment Analysis</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+								<header id="header">
+									<ul class="icons">
+										<li><a href="https://www.linkedin.com/in/zeshanbasaran" class="icon brands fa-linkedin"><span class="label">LinkedIn</span></a></li>
+										<li><a href="https://www.github.com/zeshanbasaran" class="icon brands fa-github"><span class="label">Github</span></a></li>
+										<li><a href="https://www.twitter.com/ZeshanBasaran" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+										<li><a href="https://join.slack.com/t/zeshanbasaran/shared_invite/zt-1mndmo82q-m9vbKqtflzb7~j0EbiHgYQ" class="icon brands fa-slack"><span class="label">Slack</span></a></li>
+									</ul>
+								</header>
+
+							<!-- Content -->
+								<section>
+									<header class="main">
+										<h1>Movie Sentiment Analysis</h1>
+									</header>
+
+									<hr class="major" />
+									<h2>Introduction</h2>
+									<p>This python script uses natural language processing (NLP) and machine learning algorithms from scikit-learn to analyze a user's sentiment regarding a movie. The dataset is a collection of IMDB reviews from Kaggle.</p>
+									<p>It works by taking 1000 positive and 1000 negative movie reviews from the dataset to train and test</p>
+										<span class="image objectt"></span>
+										<img src="images/sampleSize.png" width = "80%" height = auto alt="" />
+									<p>and begins to associate certain words with a positive or negative sentinment .</p>
+
+									<h3>Example:</h3>
+									<p>Positive sentinment words = "good", "great", "amazing", "best", "love"...</p>
+										<span class="image objectt"></span>
+										<img src="images/posWords.png" width = "80%" height = auto alt="" />
+									<p>Negative sentinment words = "bad", "terrible", "hate", "awful", "trash"...</p>
+										<span class="image objectt"></span>
+										<img src="images/negWords.png" width = "80%" height = auto alt="" />
+									<p>Using the predict function from scikit-learn, the script is able to determine if a user-entered movie review is positive or negative, and return a response to match.</p>
+										<span class="image objectt"></span>
+										<img src="images/predict.png" width = "80%" height = auto alt="" />
+									
+									<hr class="major" />
+									<h2>Limitations</h2>
+									<p>The dataset only had positive and negative reviews to train from, so the script is unable to recognize neutral sentinment. Interestingly, "okay" was assocaited with positive sentiment</p>
+										<span class="image objectt"></span>
+										<img src="images/okay.png" width = "80%" height = auto alt="" />
+									<p>while "ok" was associated with negative sentiment.</p>
+										<span class="image objectt"></span>
+										<img src="images/ok.png" width = "80%" height = auto alt="" />
+									<p>It also struggled to understand some slang that may have not been present in the dataset. Cuss words were very hit-or-miss, since the same one can have a different meaning depending on the context.</p>
+										<span class="image objectt"></span>
+										<img src="images/cussWords.png" width = "80%" height = auto alt="" />
+
+
+									<hr class="major" />
+									<h2>Credits</h2>
+
+									<h3>Research Materials</h3>
+									<ul>
+									<li><p><a href="https://towardsdatascience.com/a-beginners-guide-to-text-classification-with-scikit-learn-632357e16f3a">A simple Guide to Scikit-Learn</a> by The PyCoach</p></li>
+									</ul>
+
+									<h3>Datasets</h3>
+									<ul>
+									<li><p><a href="https://www.kaggle.com/datasets/lakshmi25npathi/imdb-dataset-of-50k-movie-reviews?resource=download">IMDB Dataset of 50K Movie Reviews</a> by Lakshmipathi N</p></li>
+									</ul>
+
+									<p>Full Code File: <a href="https://github.com/zeshanbasaran/movieSentimentAnalysis">movieSentimentAnalysis</a></p>
+								</section>
+
+						</div>
+					</div>
+
+				<!-- Sidebar -->
+					<div id="sidebar">
+						<div class="inner">
+
+							<!-- Search -->
+								<section id="search" class="alt">
+									<form method="post" action="#">
+										<input type="text" name="query" id="query" placeholder="Search" />
+									</form>
+								</section>
+
+							<!-- Menu -->
+								<nav id="menu">
+									<header class="major">
+										<h2>Menu</h2>
+									</header>
+									<ul>
+										<li><a href="index.html">Homepage</a></li>
+										<li><a href="aboutMe.html">About Me</a></li>
+										<li>
+											<span class="opener">Projects</span>
+											<ul>
+												<li><a href="metronome-app.html">Metronome App</a></li>
+												<li><a href="movieSentimentAnalysis.html">Movie Sentiment Analysis</a></li>
+											</ul>
+										</li>
+									</ul>
+								</nav>
+
+							<!-- Section -->
+							<section>
+								<header class="major">
+									<h2>Get in Touch</h2>
+								</header>
+								<p>Feel free to reach me by email with any questions, comments, or oppoutunities!</p>
+								<ul class="contact">
+									<li class="icon solid fa-envelope"><a href="mailto:zeshan.basaran@gmail.com">zeshan.basaran@gmail.com</a></li>
+								</ul>
+							</section>
+
+						<!-- Footer -->
+							<footer id="footer">
+								<p class="copyright">&copy; 2023 Zeshan Basaran.</p>
+							</footer>
+
+					</div>
+				</div>
+
+		</div>
+
+	<!-- Scripts -->
+		<script src="assets/js/jquery.min.js"></script>
+		<script src="assets/js/browser.min.js"></script>
+		<script src="assets/js/breakpoints.min.js"></script>
+		<script src="assets/js/util.js"></script>
+		<script src="assets/js/main.js"></script>
+
+</body>
+</html>
