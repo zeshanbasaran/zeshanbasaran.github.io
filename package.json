@@ -1,0 +1,23 @@
+{
+  "name": "sci-fi-portfolio",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^4.3.6",
+    "@tanstack/react-virtual": "^3.13.12",
+    "astro": "^5.14.1",
+    "framer-motion": "^12.23.22",
+    "plotly.js": "^3.1.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/forms": "^0.5.10",
+    "@tailwindcss/typography": "^0.5.19",
+    "tailwindcss": "^4.1.13"
+  }
+}
