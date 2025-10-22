@@ -1,0 +1,12 @@
+BEGIN:VCARD
+VERSION:3.0
+N:Basaran;Zeshan;;;
+FN:Zeshan Basaran
+TITLE:Data Analyst & Software Engineer
+EMAIL;TYPE=INTERNET:zeshan.basaran@email.com
+TEL;TYPE=CELL:+1-410-555-1234
+URL:https://zeshanbasaran.com
+ORG:Zeshan Basaran Portfolio
+NOTE:Data analysis, machine learning, and software engineering stitched into reproducible systems.
+ADR;TYPE=WORK:;;Baltimore;Maryland;;USA
+END:VCARD

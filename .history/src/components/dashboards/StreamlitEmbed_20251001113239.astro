@@ -1,0 +1,43 @@
+---
+/**
+ * ToolbarButton (inline HTML helpers)
+ * We place these right where the buttons are used above (Open / Reload / Full)
+ */
+const _ = null;
+---
+<!-- Open: anchor -->
+<a
+  class="inline-flex items-center gap-1 rounded-lg border border-sky-400/20 bg-slate-900/40 px-2 py-1 text-[10.5px] font-medium text-slate-200 hover:bg-slate-900/60 hover:text-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-400/40 transition"
+  title="Open in new tab"
+  aria-label="Open in new tab"
+  href={iframeSrc}
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  <svg viewBox="0 0 24 24" class="h-4 w-4"><path fill="currentColor" d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3zM5 5h6V3H5c-1.1 0-2 .9-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2v-6h-2v6H5V5z"/></svg>
+  <span class="hidden sm:inline">Open</span>
+</a>
+
+<!-- Button: Reload -->
+<button
+  type="button"
+  data-action="reload"
+  class="inline-flex items-center gap-1 rounded-lg border border-sky-400/20 bg-slate-900/40 px-2 py-1 text-[10.5px] font-medium text-slate-200 hover:bg-slate-900/60 hover:text-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-400/40 transition"
+  title="Reload"
+  aria-label="Reload"
+>
+  <svg viewBox="0 0 24 24" class="h-4 w-4"><path fill="currentColor" d="M12 6v3l4-4-4-4v3C6.48 4 2 8.48 2 14s4.48 10 10 10a10 10 0 0 0 9.33-6.34l-1.86-.77A8 8 0 1 1 12 6z"/></svg>
+  <span class="hidden sm:inline">Reload</span>
+</button>
+
+<!-- Button: Fullscreen -->
+<button
+  type="button"
+  data-action="fullscreen"
+  class="inline-flex items-center gap-1 rounded-lg border border-sky-400/20 bg-slate-900/40 px-2 py-1 text-[10.5px] font-medium text-slate-200 hover:bg-slate-900/60 hover:text-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-400/40 transition"
+  title="Fullscreen"
+  aria-label="Fullscreen"
+>
+  <svg viewBox="0 0 24 24" class="h-4 w-4"><path fill="currentColor" d="M7 14H5v5h5v-2H7v-3zm0-4h3V7h2v5H7V10zm10 9h-3v2h5v-5h-2v3zm0-9V7h-3V5h5v5h-2z"/></svg>
+  <span class="hidden sm:inline">Full</span>
+</button>

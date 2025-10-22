@@ -1,0 +1,317 @@
+---
+import ProjectLayout from "../../layouts/ProjectLayout.astro";
+
+const title = "Towson University Lost & Found Web App";
+const description =
+  "Full-stack app for reporting, browsing, and claiming lost items on campus. Includes advanced search & filters, image uploads, admin review workflow, and email notifications.";
+
+const card =
+  "rounded-2xl ring-1 ring-white/10 bg-slate-900/50 p-6 backdrop-blur shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]";
+---
+
+<ProjectLayout
+  title={title}
+  description={description}
+  repoOwner="zeshanbasaran"
+  repoName="towson-lost-and-found-app"
+>
+  <!-- CTAs -->
+  <a
+    slot="cta"
+    href="https://github.com/zeshanbasaran/towson-lost-and-found-app"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="inline-flex items-center gap-2 rounded-2xl border border-cyan-400/40 bg-cyan-500/10 px-4 py-2 text-sm hover:bg-cyan-500/20"
+  >
+    View on GitHub
+  </a>
+  <a
+    slot="quicklink"
+    href="#quickstart"
+    class="inline-flex items-center gap-2 rounded-2xl border border-fuchsia-400/40 bg-fuchsia-500/10 px-4 py-2 text-sm hover:bg-fuchsia-500/20"
+  >
+    Quickstart
+  </a>
+
+  <!-- =================== Top 3 Cards (ORDER: Overview | Stack | Key Capabilities) =================== -->
+
+  <!-- Overview (LEFT) -->
+  <div slot="overview" class={`md:col-span-4 ${card} h-full transition-transform hover:-translate-y-0.5`}>
+    <div class="flex items-start gap-3">
+      <div class="rounded-xl bg-cyan-500/10 ring-1 ring-cyan-400/20 p-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-cyan-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </div>
+      <h3 class="text-2xl font-semibold tracking-tight">Overview</h3>
+    </div>
+
+    <div class="mt-3 grid gap-6 md:grid-cols-12">
+      <p class="text-slate-300 leading-relaxed md:col-span-8 max-w-none">
+        Campus Lost &amp; Found system with public reporting, searchable item directory, claim verification, and an admin
+        moderation queue. Image uploads, role-based access, and transactional emails provide an end-to-end workflow from
+        “found” to “returned to owner.”
+      </p>
+      <div class="md:col-span-4">
+        <div class="mt-5 h-px bg-gradient-to-r from-white/10 via-white/5 to-transparent md:hidden"></div>
+        <ul class="mt-4 text-sm text-slate-300 space-y-1">
+          <li><span class="text-slate-400">License:</span> MIT</li>
+          <li><span class="text-slate-400">Stack:</span> React + Node.js + MySQL</li>
+          <li><span class="text-slate-400">Auth:</span> Role-based (Admin / User)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stack (MIDDLE) -->
+  <div slot="stack" class={`md:col-span-4 ${card} h-full transition-transform hover:-translate-y-0.5`}>
+    <div class="flex items-start gap-3">
+      <div class="rounded-xl bg-fuchsia-500/10 ring-1 ring-fuchsia-400/20 p-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-fuchsia-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16M8 4v16m8-16v16"/>
+        </svg>
+      </div>
+      <h3 class="text-2xl font-semibold tracking-tight">Stack</h3>
+    </div>
+
+    <!-- Left = Repo languages, Right = Libraries -->
+    <div class="mt-3 grid gap-6 md:grid-cols-12 items-start">
+      <!-- LEFT: repo languages -->
+      <div class="md:col-span-5 order-2 md:order-1">
+        <p class="text-xs uppercase tracking-wider text-slate-400">Repo languages</p>
+        <!-- use a value to work with the page-level loader below -->
+        <div
+            data-lang-bars="towson-lost-and-found-app"
+            class="mt-2 space-y-2"
+        ></div>
+      </div>
+
+      <!-- RIGHT: libraries (bullet grid) -->
+      <div class="md:col-span-7 order-1 md:order-2">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium text-emerald-200">
+            ⚙️ Web libraries
+          </span>
+        </div>
+
+        <ul class="mt-3 grid grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-2 text-sm">
+          {[
+            "React",
+            "TypeScript",
+            "Vite",
+            "Tailwind CSS",
+            "Node.js",
+            "Express",
+            "MySQL",
+            "Prisma (ORM)",
+            "Zod",
+            "Axios",
+            "Multer / Cloudinary",
+            "Nodemailer / Resend"
+          ].map(lib => (
+            <li class="flex items-center gap-2">
+              <span class="mt-0.5 h-1.5 w-1.5 rounded-full bg-emerald-400/70"></span>
+              <span class="text-slate-200">{lib}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Key Capabilities (RIGHT) -->
+  <div slot="capabilities" class={`md:col-span-4 ${card} h-full transition-transform hover:-translate-y-0.5`}>
+    <div class="flex items-start gap-3">
+      <div class="rounded-xl bg-emerald-500/10 ring-1 ring-emerald-400/20 p-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8l2 2-2 2m12-4l2 2-2 2M9 5l3 3 3-3M9 19l3-3 3 3"/>
+        </svg>
+      </div>
+      <h3 class="text-2xl font-semibold tracking-tight">Key Capabilities</h3>
+    </div>
+
+    <ul class="mt-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-6 gap-y-2 text-sm text-slate-300">
+      <li class="flex items-start gap-2"><span class="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-400/70"></span> Report found items with photos &amp; metadata.</li>
+      <li class="flex items-start gap-2"><span class="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-400/70"></span> Search by category, building, keywords, &amp; date range.</li>
+      <li class="flex items-start gap-2"><span class="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-400/70"></span> Claim workflow with required proof prompts.</li>
+      <li class="flex items-start gap-2"><span class="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-400/70"></span> Admin moderation queue &amp; status changes.</li>
+      <li class="flex items-start gap-2"><span class="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-400/70"></span> Email notifications (submission, approval, pickup).</li>
+      <li class="flex items-start gap-2"><span class="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-400/70"></span> Pagination, CSV export, and audit logs.</li>
+    </ul>
+  </div>
+
+  <!-- =================== Feature Grid =================== -->
+  <div slot="feature-a" class={`${card} relative overflow-hidden transition-transform hover:-translate-y-0.5`}>
+    <div class="pointer-events-none absolute inset-0 bg-gradient-to-tr from-cyan-500/5 via-transparent to-transparent"></div>
+    <div class="flex items-center gap-3">
+      <span class="rounded-lg bg-cyan-500/10 ring-1 ring-cyan-400/20 p-1.5">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-cyan-300" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18M3 17h18"/></svg>
+      </span>
+      <h3 class="text-lg font-semibold">Database &amp; API</h3>
+    </div>
+    <ul class="mt-3 list-disc pl-5 text-sm text-slate-300 space-y-1">
+      <li>MySQL schema for items, claims, users, buildings, categories.</li>
+      <li>Typed server routes with input validation (Zod) and Prisma.</li>
+    </ul>
+  </div>
+
+  <div slot="feature-b" class={`${card} relative overflow-hidden transition-transform hover:-translate-y-0.5`}>
+    <div class="pointer-events-none absolute inset-0 bg-gradient-to-tr from-fuchsia-500/5 via-transparent to-transparent"></div>
+    <div class="flex items-center gap-3">
+      <span class="rounded-lg bg-fuchsia-500/10 ring-1 ring-fuchsia-400/20 p-1.5">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-fuchsia-300" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12h18M12 3v18"/></svg>
+      </span>
+      <h3 class="text-lg font-semibold">Search &amp; Filters</h3>
+    </div>
+    <ul class="mt-3 list-disc pl-5 text-sm text-slate-300 space-y-1">
+      <li>Indexed queries; combined text + facet filtering with debounced UI.</li>
+      <li>Reusable hooks for URL-synced filters and server-side pagination.</li>
+    </ul>
+  </div>
+
+  <div slot="feature-c" class={`${card} relative overflow-hidden transition-transform hover:-translate-y-0.5`}>
+    <div class="pointer-events-none absolute inset-0 bg-gradient-to-tr from-emerald-500/5 via-transparent to-transparent"></div>
+    <div class="flex items-center gap-3">
+      <span class="rounded-lg bg-emerald-500/10 ring-1 ring-emerald-400/20 p-1.5">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-300" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v12m6-6H6"/></svg>
+      </span>
+      <h3 class="text-lg font-semibold">Images &amp; Storage</h3>
+    </div>
+    <ul class="mt-3 list-disc pl-5 text-sm text-slate-300 space-y-1">
+      <li>Secure uploads (Multer) with optional Cloudinary offload &amp; sizing.</li>
+      <li>Content moderation hooks &amp; EXIF stripping for privacy.</li>
+    </ul>
+  </div>
+
+  <div slot="feature-d" class={`${card} relative overflow-hidden transition-transform hover:-translate-y-0.5`}>
+    <div class="pointer-events-none absolute inset-0 bg-gradient-to-tr from-indigo-500/5 via-transparent to-transparent"></div>
+    <div class="flex items-center gap-3">
+      <span class="rounded-lg bg-indigo-500/10 ring-1 ring-indigo-400/20 p-1.5">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-300" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16v12H4zM8 10h8v2H8z"/></svg>
+      </span>
+      <h3 class="text-lg font-semibold">Notifications &amp; Admin</h3>
+    </div>
+    <ul class="mt-3 list-disc pl-5 text-sm text-slate-300 space-y-1">
+      <li>Email via Nodemailer or Resend (submission, approval, pickup).</li>
+      <li>Role-based dashboard: verify claims, resolve items, export data.</li>
+    </ul>
+  </div>
+
+  <!-- =================== Quickstart =================== -->
+  <div slot="quickstart" class="mt-4 grid grid-cols-1 gap-6 md:grid-cols-2">
+    <div class={card}>
+      <h3 class="font-semibold">1) Clone &amp; Install</h3>
+      <pre class="mt-3 overflow-x-auto rounded-xl bg-black/60 p-4 text-sm"><code>git clone https://github.com/zeshanbasaran/towson-lost-and-found-app
+cd towson-lost-and-found-app
+
+# Install server &amp; client (if monorepo, adjust paths)
+npm install
+# or
+pnpm install</code></pre>
+    </div>
+
+    <div class={card}>
+      <h3 class="font-semibold">2) Configure .env</h3>
+      <p class="mt-2 text-sm text-slate-300">Create <code>.env</code> with at least:</p>
+      <pre class="mt-3 overflow-x-auto rounded-xl bg-black/60 p-4 text-sm"><code># Database
+DATABASE_URL="mysql://user:pass@localhost:3306/lostfound"
+
+# Auth (if using JWT/session)
+SESSION_SECRET="change_me"
+
+# Email (choose one)
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USER=you@example.com
+SMTP_PASS=app_password
+# or Resend
+RESEND_API_KEY=re_...</code></pre>
+    </div>
+
+    <div class={`md:col-span-2 ${card}`}>
+      <h3 class="font-semibold">3) Dev, Migrate, Seed</h3>
+      <pre class="mt-3 overflow-x-auto rounded-xl bg-black/60 p-4 text-sm"><code># Prisma (or ORM of choice)
+npx prisma migrate dev
+npx prisma db seed
+
+# Start dev servers
+npm run dev
+# or, if split:
+# npm run dev:server
+# npm run dev:client</code></pre>
+
+      <h3 class="mt-6 font-semibold">4) Build &amp; Deploy</h3>
+      <pre class="mt-3 overflow-x-auto rounded-xl bg-black/60 p-4 text-sm"><code>npm run build
+npm run start</code></pre>
+    </div>
+  </div>
+
+  <!-- Footnote -->
+  <p slot="footnote" class="text-xs text-slate-500">
+    Built by Zeshan Basaran • MIT Licensed. This page fetches live GitHub metadata on load.
+  </p>
+
+  <!-- ===== Language bars (page-specific loader; mirrors style used on other project pages) ===== -->
+<script is:inline define:vars={{ owner: "zeshanbasaran", repo: "towson-lost-and-found-app" }}>
+  const mount = document.querySelector(`[data-lang-bars="${repo}"]`);
+
+  const renderRows = (data) => {
+    const total = Object.values(data).reduce((a,b)=>a+b,0) || 1;
+    return Object.entries(data)
+      .map(([name, bytes]) => ({ name, pct: Math.round((bytes/total)*1000)/10 }))
+      .filter(x => x.pct > 0)
+      .sort((a,b) => b.pct - a.pct)
+      .map(({name, pct}) => `
+        <div class="grid grid-cols-[7rem,1fr,3rem] items-center gap-3">
+          <span class="text-xs text-slate-300">${name}</span>
+          <div class="h-1.5 rounded-full bg-white/5 overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-cyan-400/70 to-fuchsia-400/70" style="width:${pct}%"></div>
+          </div>
+          <span class="text-xs tabular-nums text-slate-400">${pct}%</span>
+        </div>
+      `).join("");
+  };
+
+  const loadLangs = async () => {
+    if (!mount) return;
+    try {
+      const url = `https://api.github.com/repos/${owner}/${repo}/languages?_=${Date.now()}`;
+      const res = await fetch(url, {
+        headers: {
+          "Accept": "application/vnd.github+json",
+          "X-GitHub-Api-Version": "2022-11-28"
+        },
+        cache: "no-store"
+      });
+
+      if (!res.ok) {
+        // Same message style, but slightly more helpful
+        if (res.status === 403) {
+          const remaining = res.headers.get("X-RateLimit-Remaining") ?? "0";
+          const reset = res.headers.get("X-RateLimit-Reset");
+          const when = reset ? new Date(+reset * 1000).toLocaleTimeString() : "soon";
+          mount.innerHTML = `<p class="text-slate-400 text-sm">Languages unavailable (rate-limited; remaining: ${remaining}; resets ~ ${when})</p>`;
+          return;
+        }
+        if (res.status === 404) {
+          mount.innerHTML = `<p class="text-slate-400 text-sm">Languages unavailable (repo not found/private)</p>`;
+          return;
+        }
+        mount.innerHTML = `<p class="text-slate-400 text-sm">Languages unavailable (GitHub API: ${res.status})</p>`;
+        return;
+      }
+
+      const data = await res.json();
+      mount.innerHTML = renderRows(data) || `<p class="text-slate-400 text-sm">No notable languages</p>`;
+    } catch {
+      mount.innerHTML = `<p class="text-slate-400 text-sm">Languages unavailable (network error)</p>`;
+    }
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", loadLangs, { once: true });
+  } else {
+    loadLangs();
+  }
+</script>
+</ProjectLayout>

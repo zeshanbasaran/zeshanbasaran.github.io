@@ -1,0 +1,49 @@
+{
+  "brand": {
+    "name": "Zeshan Basaran",
+    "logoText": "ACCESS GRANTED",
+    "tagline": "Analyzing patterns, engineering solutions, shaping the future."
+  },
+  "primary": [
+    { "id": "home", "label": "Home", "href": "/", "icon": "house", "ariaLabel": "Go to home" },
+    { "id": "projects", "label": "Projects", "href": "/projects", "icon": "folder-kanban", "ariaLabel": "View projects" },
+    { "id": "resume", "label": "Personnel File", "href": "/resume", "icon": "id-card", "ariaLabel": "View resume dossier" },
+    { "id": "about", "label": "User Profile", "href": "/about", "icon": "user", "ariaLabel": "About Zeshan" },
+    { "id": "contact", "label": "Contact", "href": "/contact", "icon": "mail", "ariaLabel": "Contact Zeshan" }
+  ],
+  "secondary": [
+    { "id": "data-analysis", "label": "Data Analysis", "href": "/projects?tab=data", "icon": "line-chart" },
+    { "id": "machine-learning", "label": "Machine Learning", "href": "/projects?tab=ml", "icon": "brain" },
+    { "id": "software-eng", "label": "Software Eng.", "href": "/projects?tab=software", "icon": "cpu" }
+  ],
+  "social": [
+    { "id": "github", "label": "GitHub", "href": "https://github.com/zeshanbasaran", "icon": "github" },
+    { "id": "linkedin", "label": "LinkedIn", "href": "https://linkedin.com/in/zeshanbasaran", "icon": "linkedin" },
+    { "id": "email", "label": "Email", "href": "mailto:zeshan.basaran@example.com", "icon": "mail" }
+  ],
+  "footer": [
+    { "id": "privacy", "label": "Privacy", "href": "/privacy" },
+    { "id": "terms", "label": "Terms", "href": "/terms" },
+    { "id": "sitemap", "label": "Sitemap", "href": "/sitemap.xml" }
+  ],
+  "shortcuts": [
+    { "keys": ["g", "h"], "action": "nav:home", "href": "/" },
+    { "keys": ["g", "p"], "action": "nav:projects", "href": "/projects" },
+    { "keys": ["g", "r"], "action": "nav:resume", "href": "/resume" },
+    { "keys": ["g", "a"], "action": "nav:about", "href": "/about" },
+    { "keys": ["g", "c"], "action": "nav:contact", "href": "/contact" }
+  ],
+  "hud": {
+    "statusLights": [
+      { "id": "sys", "label": "SYS", "state": "ok" },
+      { "id": "net", "label": "NET", "state": "ok" },
+      { "id": "ml", "label": "ML", "state": "idle" }
+    ],
+    "accent": "neon-cyan"
+  },
+  "featureFlags": {
+    "showParticles": true,
+    "enableAccessGrantedIntro": true,
+    "enableMiniDashboards": true
+  }
+}

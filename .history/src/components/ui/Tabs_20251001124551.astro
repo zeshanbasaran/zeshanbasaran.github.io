@@ -1,0 +1,345 @@
+---
+/**
+ * src/components/ui/Tabs.astro
+ * ---------------------------------------------------------------------------
+ * A lightweight, accessible tab system for Astro with zero external deps.
+ *
+ * FEATURES
+ * - A11y: proper roles/ARIA, roving tabindex, focus management
+ * - Keyboard: ArrowLeft/Right (or Up/Down), Home/End, Enter/Space to activate
+ * - Events: dispatches a "tabchange" CustomEvent with { id, index } on change
+ * - URL hash sync (optional via `syncHash`) so tabs can be deep-linked
+ * - Theming hooks via Tailwind classes + CSS variables
+ * - Works with slot-based panels for full layout freedom
+ *
+ * USAGE
+ * -----
+ * <Tabs
+ *   items={[
+ *     { id: "data",  label: "Data Analysis" },
+ *     { id: "ml",    label: "Machine Learning" },
+ *     { id: "sw",    label: "Software Eng." },
+ *   ]}
+ *   initial="data"
+ *   syncHash={true}
+ *   size="md"
+ *   variant="pill"
+ * />
+ *  <!-- Provide panel content with named slots matching item ids -->
+ *  <Fragment slot="data"> ... </Fragment>
+ *  <Fragment slot="ml">   ... </Fragment>
+ *  <Fragment slot="sw">   ... </Fragment>
+ *
+ * PROPS
+ * - items:   Array<{ id: string; label: string; icon?: string }>
+ * - initial: string | undefined  (default: items[0].id)
+ * - syncHash: boolean            (default: false) syncs active tab to #hash
+ * - size:    "sm" | "md" | "lg"  (default: "md") affects padding/text size
+ * - variant: "underline" | "pill" | "solid" (default: "underline")
+ * - class:   string | undefined  extra class on the wrapper
+ *
+ * NOTES
+ * - Icons: pass an emoji in `icon` or leave blank; for custom SVGs,
+ *   put them into the tab label text (e.g., "⚙ ML") or customize below.
+ * - If a slot is missing for a tab id, the panel renders an empty area.
+ *
+ * Sci-Fi Styling:
+ * - Uses CSS variables for glow accents; tune via `--tab-accent`.
+ * - Tailwind utility classes for quick theme alignment.
+ * ---------------------------------------------------------------------------
+ */
+
+export interface TabItem {
+  id: string;
+  label: string;
+  icon?: string; // optional emoji or short text
+}
+
+interface Props {
+  items: TabItem[];
+  initial?: string;
+  syncHash?: boolean;
+  size?: "sm" | "md" | "lg";
+  variant?: "underline" | "pill" | "solid";
+  class?: string;
+}
+
+const {
+  items = [],
+  initial,
+  syncHash = false,
+  size = "md",
+  variant = "underline",
+  class: className = "",
+} = Astro.props as Props;
+
+const initialId = (initial && items.find(i => i.id === initial)?.id) ?? items[0]?.id ?? "";
+const uid = `tabs-${Math.random().toString(36).slice(2, 8)}`;
+
+// Size presets
+const sizeClasses =
+  size === "sm"
+    ? {
+        tab: "text-xs px-3 py-1.5",
+        panel: "text-sm",
+      }
+    : size === "lg"
+    ? {
+        tab: "text-base px-5 py-3",
+        panel: "text-base",
+      }
+    : {
+        // md
+        tab: "text-sm px-4 py-2",
+        panel: "text-sm",
+      };
+
+// Variants
+const variantClasses =
+  variant === "pill"
+    ? {
+        list: "gap-2",
+        tabBase:
+          "rounded-full border border-transparent hover:border-[--tab-accent] hover:shadow-[0_0_12px_var(--tab-accent)] transition-all",
+        tabActive:
+          "bg-[color-mix(in_oklab,var(--tab-accent)_20%,transparent)] text-[--tab-accent-strong] border-[--tab-accent] shadow-[0_0_16px_var(--tab-accent)]",
+        underline: "",
+      }
+    : variant === "solid"
+    ? {
+        list: "gap-2",
+        tabBase:
+          "rounded-xl bg-zinc-900/60 border border-zinc-800 hover:border-[--tab-accent] hover:shadow-[0_0_12px_var(--tab-accent)] transition-all",
+        tabActive:
+          "bg-[color-mix(in_oklab,var(--tab-accent)_18%,#0a0a0a)] text-[--tab-accent-strong] border-[--tab-accent] shadow-[0_0_16px_var(--tab-accent)]",
+        underline: "",
+      }
+    : {
+        // underline
+        list: "gap-1",
+        tabBase:
+          "relative rounded-md hover:bg-zinc-900/40 transition-colors after:content-[''] after:absolute after:left-2 after:right-2 after:-bottom-[2px] after:h-[2px] after:bg-transparent",
+        tabActive:
+          "text-[--tab-accent-strong] after:bg-[--tab-accent] after:shadow-[0_0_12px_var(--tab-accent)]",
+        underline: "border-b border-zinc-800",
+      };
+---
+
+<style>
+  /* -----------------------------------------------------------------------
+   * Accent variables (Sci-Fi neon vibes)
+   * Tweak these at a page or :root level to theme globally if desired.
+   * --------------------------------------------------------------------- */
+  :global(:root) {
+    --tab-accent: rgba(56, 189, 248, 0.75); /* cyan-400/75 */
+    --tab-accent-strong: rgb(125, 211, 252); /* cyan-300 */
+  }
+
+  /* Focus ring: visible + neon glow */
+  .tab-focus-visible:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px color-mix(in oklab, var(--tab-accent) 55%, white),
+      0 0 18px var(--tab-accent);
+  }
+
+  /* Hide non-active panels */
+  [role="tabpanel"][data-hidden="true"] {
+    display: none;
+  }
+
+  /* Smooth panel reveal */
+  [role="tabpanel"] {
+    animation: panel-fade 180ms ease-in;
+  }
+  @keyframes panel-fade {
+    from { opacity: 0; transform: translateY(4px) }
+    to   { opacity: 1; transform: translateY(0) }
+  }
+</style>
+
+<div
+  id={uid}
+  class={`w-full ${className}`}
+  data-tabs
+  data-sync-hash={String(syncHash)}
+  data-initial={initialId}
+>
+  <!-- Tab list -->
+  <div
+    role="tablist"
+    aria-label="Tabs"
+    class={`flex ${variantClasses.list} ${variantClasses.underline}`}
+  >
+    {
+      items.map((item, index) => {
+        const tabId = `${uid}-tab-${item.id}`;
+        const panelId = `${uid}-panel-${item.id}`;
+        return (
+          <button
+            type="button"
+            id={tabId}
+            role="tab"
+            class={`tab-focus-visible ${sizeClasses.tab} ${variantClasses.tabBase} text-zinc-300 data-[active='true']:${variantClasses.tabActive}`}
+            data-tab-id={item.id}
+            aria-controls={panelId}
+            aria-selected="false"
+            tabindex={index === 0 ? 0 : -1}
+          >
+            <span class="flex items-center gap-2">
+              {item.icon ? <span aria-hidden="true">{item.icon}</span> : null}
+              <span class="whitespace-nowrap">{item.label}</span>
+            </span>
+          </button>
+        );
+      })
+    }
+  </div>
+
+  <!-- Panels -->
+  <div class={`mt-4 ${sizeClasses.panel}`}>
+    {
+      items.map((item) => {
+        const panelId = `${uid}-panel-${item.id}`;
+        const tabId = `${uid}-tab-${item.id}`;
+        return (
+          <section
+            id={panelId}
+            role="tabpanel"
+            class="rounded-xl border border-zinc-800/70 bg-zinc-950/40 p-4"
+            aria-labelledby={tabId}
+            data-panel-id={item.id}
+            data-hidden="true"
+          >
+            <slot name={item.id} />
+          </section>
+        );
+      })
+    }
+  </div>
+</div>
+
+<script is:raw>
+  (() => {
+    const root = document.currentScript?.parentElement;
+    if (!root) return;
+
+    const syncHash = root.getAttribute('data-sync-hash') === 'true';
+    const initial = root.getAttribute('data-initial') || '';
+    const tablist = root.querySelector('[role="tablist"]');
+    /** @type {HTMLButtonElement[]} */
+    const tabs = Array.from(root.querySelectorAll('[role="tab"]'));
+    /** @type {HTMLElement[]} */
+    const panels = Array.from(root.querySelectorAll('[role="tabpanel"]'));
+
+    if (!tabs.length || !panels.length) return;
+
+    // Map ids for quick lookup
+    const idToTab = new Map(tabs.map(t => [t.getAttribute('data-tab-id') || '', t]));
+    const idToPanel = new Map(panels.map(p => [p.getAttribute('data-panel-id') || '', p]));
+
+    function getIndexById(id) {
+      return tabs.findIndex(t => (t.getAttribute('data-tab-id') || '') === id);
+    }
+
+    function activateByIndex(nextIndex, { focus = true, emit = true } = {}) {
+      if (nextIndex < 0 || nextIndex >= tabs.length) return;
+      const next = tabs[nextIndex];
+      const nextId = next.getAttribute('data-tab-id') || '';
+
+      // Deactivate all
+      tabs.forEach(t => {
+        t.setAttribute('aria-selected', 'false');
+        t.setAttribute('tabindex', '-1');
+        t.dataset.active = 'false';
+      });
+      panels.forEach(p => p.setAttribute('data-hidden', 'true'));
+
+      // Activate target
+      next.setAttribute('aria-selected', 'true');
+      next.setAttribute('tabindex', '0');
+      next.dataset.active = 'true';
+      const panel = idToPanel.get(nextId);
+      if (panel) panel.setAttribute('data-hidden', 'false');
+
+      if (focus) next.focus({ preventScroll: false });
+
+      if (emit) {
+        root.dispatchEvent(new CustomEvent('tabchange', {
+          bubbles: true,
+          detail: { id: nextId, index: nextIndex }
+        }));
+      }
+
+      // Sync hash
+      if (syncHash && nextId) {
+        const newHash = `#${nextId}`;
+        if (location.hash !== newHash) {
+          history.replaceState(null, '', newHash);
+        }
+      }
+    }
+
+    // Determine initial active tab
+    let startId = initial;
+    if (syncHash && location.hash.length > 1) {
+      const hashId = location.hash.slice(1);
+      if (idToTab.has(hashId)) startId = hashId;
+    }
+    const startIndex = startId ? getIndexById(startId) : 0;
+    activateByIndex(startIndex >= 0 ? startIndex : 0, { focus: false, emit: false });
+
+    // Click handling
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => activateByIndex(i));
+    });
+
+    // Keyboard handling (roving tabindex pattern)
+    tablist?.addEventListener('keydown', (e) => {
+      const current = document.activeElement;
+      const idx = tabs.indexOf(/** @type {HTMLButtonElement} */(current));
+      if (idx === -1) return;
+
+      let next = idx;
+      switch (e.key) {
+        case 'ArrowRight':
+        case 'ArrowDown':
+          next = (idx + 1) % tabs.length;
+          break;
+        case 'ArrowLeft':
+        case 'ArrowUp':
+          next = (idx - 1 + tabs.length) % tabs.length;
+          break;
+        case 'Home':
+          next = 0;
+          break;
+        case 'End':
+          next = tabs.length - 1;
+          break;
+        case 'Enter':
+        case ' ':
+          // Activate current
+          activateByIndex(idx);
+          e.preventDefault();
+          return;
+        default:
+          return; // ignore other keys
+      }
+      // Move focus only (not activate) for arrows/home/end
+      tabs.forEach(t => t.setAttribute('tabindex', '-1'));
+      const focusTarget = tabs[next];
+      focusTarget.setAttribute('tabindex', '0');
+      focusTarget.focus();
+      e.preventDefault();
+    });
+
+    // If syncHash, react to external hash changes
+    if (syncHash) {
+      window.addEventListener('hashchange', () => {
+        const id = location.hash.slice(1);
+        const idx = getIndexById(id);
+        if (idx >= 0) activateByIndex(idx, { focus: false });
+      });
+    }
+  })();
+</script>

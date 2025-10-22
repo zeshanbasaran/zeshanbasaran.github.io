@@ -1,0 +1,61 @@
+---
+/**
+ * src/pages/resume.astro
+ * ------------------------------------------------------------
+ * "Personnel File" (Resume) Page — Sci-Fi Dossier Style
+ *
+ * Update:
+ *   This page now UTILIZES `src/data/resume.json` as the single
+ *   source of truth. Rendering is delegated to <ResumePanel/>,
+ *   which auto-loads the JSON internally and lets this page
+ *   optionally override a few props (e.g., pdfPath, compact).
+ *
+ * What this file does:
+ *   • Imports Base layout
+ *   • Imports resume.json (for page <title>/<meta> convenience)
+ *   • Renders <ResumePanel /> (which reads the JSON itself)
+ *
+ * If you want to pre-process the JSON (e.g., add badges),
+ * consider passing overrides to <ResumePanel />.
+ * ------------------------------------------------------------
+ */
+
+import Base from "../layouts/Base.astro";
+import ResumePanel from "../components/resume/ResumePanel.astro";
+import resume from "../data/resume.json";
+
+// Pull a few basics for page metadata (title/description)
+const basics = resume?.basics ?? {};
+const PAGE_TITLE =
+  (basics.name ? `${basics.name} — Resume File` : "Personnel File — Resume");
+const PAGE_DESC =
+  basics.tagline ?? "A classified dossier: skills, experience, and education logged as system records.";
+
+// Public PDF path (drop your resume PDF into /public)
+const PDF_PATH = "/Zeshan_Basaran_Resume.pdf";
+---
+
+<Base title={PAGE_TITLE} description={PAGE_DESC}>
+  {/* HEADER shell is handled in ResumePanel; keep page clean */}
+  <ResumePanel
+    pdfPath={PDF_PATH}
+    website={basics.website /* optional if you add it later */}
+    /* You can override any field below to differ from JSON:
+       name="Override Name"
+       role="Override Role"
+       location="Override Location"
+       clearance="Data Analyst / Computer Scientist"
+       compact={false}
+       showStructuredData={true}
+    */
+  />
+
+  {/* Print tweaks scoped to this page */}
+  <style is:global>
+    @media print {
+      .print\:hidden { display: none !important; }
+      a[href]:after { content: "" !important; }
+      body { background: white !important; }
+    }
+  </style>
+</Base>

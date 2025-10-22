@@ -1,0 +1,251 @@
+---
+import ProjectLayout from "../../layouts/ProjectLayout.astro";
+
+const title = "Systematic Trading Backtester & Risk Monitor";
+const description =
+  "A production-style framework for designing, simulating, and monitoring systematic trading strategies with data ingestion, strategies, backtesting, risk metrics, DB logging, reports, and a Streamlit dashboard.";
+
+const screenshots = [
+  { id: "overview", src: "https://raw.githubusercontent.com/zeshanbasaran/systematic-backtester/main/image-1.png", title: "Overview", caption: "High-level KPIs with equity, drawdown, and tab navigation." },
+  { id: "risk",    src: "https://raw.githubusercontent.com/zeshanbasaran/systematic-backtester/main/image-2.png", title: "Risk Monitoring", caption: "Max drawdown, volatility, and threshold breach detection." },
+  { id: "trades",  src: "https://raw.githubusercontent.com/zeshanbasaran/systematic-backtester/main/image-3.png", title: "Trades Log", caption: "Timestamped executions with price/cost and CSV export." },
+  { id: "pnl",     src: "https://raw.githubusercontent.com/zeshanbasaran/systematic-backtester/main/image-4.png", title: "PnL Analysis", caption: "Distribution and time series of returns & equity." },
+];
+
+// shared card token (kept consistent with the site)
+const card =
+  "rounded-2xl ring-1 ring-white/10 bg-slate-900/50 p-6 backdrop-blur shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]";
+---
+
+<ProjectLayout
+  title={title}
+  description={description}
+  repoOwner="zeshanbasaran"
+  repoName="systematic-backtester"
+  {screenshots}
+>
+  <!-- CTAs -->
+  <a slot="cta" href="https://github.com/zeshanbasaran/systematic-backtester" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 rounded-2xl border border-cyan-400/40 bg-cyan-500/10 px-4 py-2 text-sm hover:bg-cyan-500/20">
+    View on GitHub
+  </a>
+  <a slot="quicklink" href="#quickstart" class="inline-flex items-center gap-2 rounded-2xl border border-fuchsia-400/40 bg-fuchsia-500/10 px-4 py-2 text-sm hover:bg-fuchsia-500/20">
+    Quickstart
+  </a>
+
+  <!-- =================== Top 3 Cards (Overview | Stack | Key Capabilities) =================== -->
+  <!-- Overview (LEFT) -->
+  <div slot="overview" class={`md:col-span-4 ${card} h-full transition-transform hover:-translate-y-0.5`}>
+    <div class="flex items-start gap-3">
+      <div class="rounded-xl bg-cyan-500/10 ring-1 ring-cyan-400/20 p-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-cyan-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v12m7-9v9a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
+        </svg>
+      </div>
+      <h3 class="text-2xl font-semibold tracking-tight">Overview</h3>
+    </div>
+
+    <div class="mt-3 grid gap-6 md:grid-cols-12">
+      <p class="text-slate-300 leading-relaxed md:col-span-8 max-w-none">
+        Production-style backtesting framework with data ingestion (Yahoo), strategies (SMA, Bollinger),
+        simulation engine, risk metrics/monitor, SQL DB logging, auto reports, and a Streamlit dashboard.
+      </p>
+      <div class="md:col-span-4">
+        <div class="mt-5 h-px bg-gradient-to-r from-white/10 via-white/5 to-transparent md:hidden"></div>
+        <ul class="mt-4 text-sm text-slate-300 space-y-1">
+          <li><span class="text-slate-400">License:</span> MIT</li>
+          <li><span class="text-slate-400">Runs:</span> Python 3.10+</li>
+          <li><span class="text-slate-400">Dashboard:</span> Streamlit</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stack (MIDDLE) -->
+  <div slot="stack" class={`md:col-span-4 ${card} h-full transition-transform hover:-translate-y-0.5`}>
+    <div class="flex items-start gap-3">
+      <div class="rounded-xl bg-fuchsia-500/10 ring-1 ring-fuchsia-400/20 p-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-fuchsia-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16M8 4v16m8-16v16"/>
+        </svg>
+      </div>
+      <h3 class="text-2xl font-semibold tracking-tight">Stack</h3>
+    </div>
+
+    <div class="mt-3 grid gap-6 md:grid-cols-12">
+      <div class="md:col-span-7">
+        <p class="text-slate-300 max-w-none">
+          Python • pandas • NumPy • Matplotlib • SQLAlchemy • yfinance • pyarrow • Streamlit
+        </p>
+        <div class="mt-4 flex flex-wrap gap-2">
+          {["pandas","NumPy","SQLAlchemy","Streamlit","pyarrow","yfinance"].map(tag => (
+            <span class="px-3 py-1 rounded-full text-xs ring-1 ring-white/10 bg-white/5 text-slate-200">{tag}</span>
+          ))}
+        </div>
+      </div>
+      <div class="md:col-span-5">
+        <p class="text-xs uppercase tracking-wider text-slate-400">Repo languages</p>
+        <div data-lang-bars="systematic-backtester" class="mt-2 space-y-2"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Key Capabilities (RIGHT) -->
+  <div slot="capabilities" class={`md:col-span-4 ${card} h-full transition-transform hover:-translate-y-0.5`}>
+    <div class="flex items-start gap-3">
+      <div class="rounded-xl bg-emerald-500/10 ring-1 ring-emerald-400/20 p-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8l2 2-2 2m12-4l2 2-2 2M9 5l3 3 3-3M9 19l3-3 3 3"/>
+        </svg>
+      </div>
+      <h3 class="text-2xl font-semibold tracking-tight">Key Capabilities</h3>
+    </div>
+
+    <ul class="mt-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-6 gap-y-2 text-sm text-slate-300">
+      <li class="flex items-start gap-2"><span class="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-400/70"></span> SMA crossover & Bollinger mean-reversion (extensible base).</li>
+      <li class="flex items-start gap-2"><span class="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-400/70"></span> Slippage/commissions; equity/returns/trade logs.</li>
+      <li class="flex items-start gap-2"><span class="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-400/70"></span> Metrics: CAGR, Vol, Sharpe, MaxDD; VaR (hist/param).</li>
+      <li class="flex items-start gap-2"><span class="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-400/70"></span> Risk thresholds & breach flags; DB persistence.</li>
+      <li class="flex items-start gap-2"><span class="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-400/70"></span> Excel reports + charts.</li>
+      <li class="flex items-start gap-2"><span class="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-400/70"></span> Streamlit dashboard (KPIs & tabs).</li>
+    </ul>
+  </div>
+
+  <!-- =================== Four Info Boxes (stylish) =================== -->
+  <div slot="feature-a" class={`${card} relative overflow-hidden transition-transform hover:-translate-y-0.5`}>
+    <div class="pointer-events-none absolute inset-0 bg-gradient-to-tr from-cyan-500/5 via-transparent to-transparent"></div>
+    <div class="flex items-center gap-3">
+      <span class="rounded-lg bg-cyan-500/10 ring-1 ring-cyan-400/20 p-1.5">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-cyan-300" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </span>
+      <h3 class="text-lg font-semibold">Data Ingestion</h3>
+    </div>
+    <ul class="mt-3 list-disc pl-5 text-sm text-slate-300 space-y-1">
+      <li>Yahoo Finance OHLCV (daily/hourly) with parquet caching.</li>
+      <li>Reusable loader API: <code class="rounded bg-black/40 px-1">get_price_data(symbol, start, end, bar)</code></li>
+    </ul>
+  </div>
+
+  <div slot="feature-b" class={`${card} relative overflow-hidden transition-transform hover:-translate-y-0.5`}>
+    <div class="pointer-events-none absolute inset-0 bg-gradient-to-tr from-fuchsia-500/5 via-transparent to-transparent"></div>
+    <div class="flex items-center gap-3">
+      <span class="rounded-lg bg-fuchsia-500/10 ring-1 ring-fuchsia-400/20 p-1.5">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-fuchsia-300" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12h18M12 3v18"/></svg>
+      </span>
+      <h3 class="text-lg font-semibold">Strategies &amp; Engine</h3>
+    </div>
+    <ul class="mt-3 list-disc pl-5 text-sm text-slate-300 space-y-1">
+      <li>SMA crossover, Bollinger mean-rev; extend via <code>strategies/base.py</code>.</li>
+      <li>Event-style simulation with slippage &amp; commissions.</li>
+    </ul>
+  </div>
+
+  <div slot="feature-c" class={`${card} relative overflow-hidden transition-transform hover:-translate-y-0.5`}>
+    <div class="pointer-events-none absolute inset-0 bg-gradient-to-tr from-emerald-500/5 via-transparent to-transparent"></div>
+    <div class="flex items-center gap-3">
+      <span class="rounded-lg bg-emerald-500/10 ring-1 ring-emerald-400/20 p-1.5">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-300" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v12m6-6H6"/></svg>
+      </span>
+      <h3 class="text-lg font-semibold">Risk &amp; Reporting</h3>
+    </div>
+    <ul class="mt-3 list-disc pl-5 text-sm text-slate-300 space-y-1">
+      <li>MaxDD, VaR, Vol thresholds with breach detection.</li>
+      <li>Excel report writer + charts, plus SQL DB logging.</li>
+    </ul>
+  </div>
+
+  <div slot="feature-d" class={`${card} relative overflow-hidden transition-transform hover:-translate-y-0.5`}>
+    <div class="pointer-events-none absolute inset-0 bg-gradient-to-tr from-indigo-500/5 via-transparent to-transparent"></div>
+    <div class="flex items-center gap-3">
+      <span class="rounded-lg bg-indigo-500/10 ring-1 ring-indigo-400/20 p-1.5">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-300" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16v12H4zM8 10h8v2H8z"/></svg>
+      </span>
+      <h3 class="text-lg font-semibold">Dashboard</h3>
+    </div>
+    <ul class="mt-3 list-disc pl-5 text-sm text-slate-300 space-y-1">
+      <li>Streamlit app with KPIs, equity/drawdown, trades, PnL.</li>
+      <li>Roadmap: DB query tab, notifications, position sizing models.</li>
+    </ul>
+  </div>
+
+  <!-- =================== Quickstart =================== -->
+  <div slot="quickstart" class="mt-4 grid grid-cols-1 gap-6 md:grid-cols-2">
+    <div class={card}>
+      <h3 class="font-semibold">1) Install Dependencies</h3>
+      <pre class="mt-3 overflow-x-auto rounded-xl bg-black/60 p-4 text-sm"><code>python -m venv venv
+# Windows
+venv\Scripts\activate
+# macOS/Linux
+source venv/bin/activate
+
+pip install -r requirements.txt</code></pre>
+    </div>
+
+    <div class={card}>
+      <h3 class="font-semibold">2) Configure</h3>
+      <p class="mt-2 text-sm text-slate-300">Edit <code>src/config.py</code>:</p>
+      <ul class="mt-2 list-disc pl-5 text-sm text-slate-300 space-y-1">
+        <li><code>SYMBOLS, START, END, BAR</code></li>
+        <li><code>INIT_CASH, SLIPPAGE_BPS, COMM_PER_TRADE</code></li>
+        <li><code>RISK</code> (max_dd, var_95, vol_ann)</li>
+        <li><code>DB_URL</code> (e.g., <code>sqlite:///data/trades.db</code>)</li>
+      </ul>
+    </div>
+
+    <div class={`md:col-span-2 ${card}`}>
+      <h3 class="font-semibold">3) Run a Backtest (example)</h3>
+      <pre class="mt-3 overflow-x-auto rounded-xl bg-black/60 p-4 text-sm"><code>from src.config import INIT_CASH
+from src.data.loaders import get_price_data
+from src.strategies.sma_crossover import sma_crossover
+from src.engine.backtester import simulate
+from src.engine.metrics import ann_return, sharpe, max_drawdown
+
+df = get_price_data("SPY", "2013-01-01", "2025-01-01", "1d")
+pos = sma_crossover(df, short=50, long=200, allow_short=False)
+res = simulate(df, pos, INIT_CASH)
+print("CAGR:", ann_return(res["returns"], 252))
+print("Sharpe:", sharpe(res["returns"], 252))
+print("MaxDD:", max_drawdown(res["equity"])[0])</code></pre>
+
+      <h3 class="mt-6 font-semibold">4) Launch Dashboard</h3>
+      <pre class="mt-3 overflow-x-auto rounded-xl bg-black/60 p-4 text-sm"><code>streamlit run dashboards/app_streamlit.py</code></pre>
+    </div>
+  </div>
+
+  <!-- Footnote -->
+  <p slot="footnote" class="text-xs text-slate-500">
+    Built by Zeshan Basaran • MIT Licensed. This page fetches live GitHub metadata on load.
+  </p>
+
+  <!-- Language bars (client) -->
+  <script is:inline define:vars={{ owner: "zeshanbasaran", repo: "systematic-backtester" }}>
+    const mount = document.querySelector(`[data-lang-bars="${repo}"]`);
+    if (mount) {
+      (async () => {
+        try {
+          const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/languages`);
+          if (!res.ok) return;
+          const data = await res.json();
+          const total = Object.values(data).reduce((a,b)=>a+b,0) || 1;
+
+          const rows = Object.entries(data)
+            .map(([name, bytes]) => ({ name, pct: Math.round((bytes/total)*1000)/10 }))
+            .filter(x => x.pct > 0)
+            .sort((a,b) => b.pct - a.pct)
+            .map(({name, pct}) => `
+              <div class="grid grid-cols-[7rem,1fr,3rem] items-center gap-3">
+                <span class="text-xs text-slate-300">${name}</span>
+                <div class="h-1.5 rounded-full bg-white/5 overflow-hidden">
+                  <div class="h-full bg-gradient-to-r from-cyan-400/70 to-fuchsia-400/70" style="width:${pct}%"></div>
+                </div>
+                <span class="text-xs tabular-nums text-slate-400">${pct}%</span>
+              </div>
+            `).join("");
+
+          mount.innerHTML = rows || `<p class="text-slate-400 text-sm">No notable languages</p>`;
+        } catch {
+          mount.innerHTML = `<p class="text-slate-400 text-sm">Languages unavailable (network error)</p>`;
+        }
+      })();
+    }
+  </script>
+</ProjectLayout>

@@ -1,0 +1,343 @@
+---
+/**
+ * src/components/resume/ResumePanel.astro
+ * ------------------------------------------------------------
+ * Reusable "Personnel File" Resume Panel — Sci-Fi Dossier UI
+ *
+ * Update:
+ *   This version AUTO-LOADS data from `src/data/resume.json`
+ *   and uses it as the default content. Any incoming props
+ *   will override the JSON values (prop > JSON fallback).
+ *
+ * JSON Shape (see src/data/resume.json):
+ * {
+ *   "basics": {
+ *     "name": "...", "title": "...", "tagline": "...",
+ *     "location": "...", "email": "...", "github": "...", "linkedin": "..."
+ *   },
+ *   "skills": { "languages":[], "frameworks":[], "tools":[], "concepts":[] },
+ *   "experience": [{ company, role, period, details[], (optional) location }],
+ *   "education": [{ institution, degree, period, gpa?, achievements[]? }],
+ *   "projects": [...],              // not rendered here (kept for site use)
+ *   "certifications": [{ title, issuer, year, details? }],
+ *   "timeline": [{ year, event }]
+ * }
+ *
+ * Usage (unchanged):
+ *   <ResumePanel ...optional overrides... />
+ *
+ * Notes:
+ *   • Keep this component presentational — no client hydration.
+ *   • Tailwind classes provide layout & theme.
+ *   • `resume.json` remains the single source of truth;
+ *     you can still pass props to override specific fields.
+ * ------------------------------------------------------------
+ */
+
+import resume from "../../data/resume.json";
+
+/* ---------- Local Types (component-facing) ---------- */
+export interface Exp {
+  org: string;
+  title: string;
+  timeframe: string;
+  location?: string;
+  badges?: string[];
+  bullets: string[];
+}
+
+export interface Edu {
+  school: string;
+  degree: string;
+  timeframe: string;
+  details?: string[];
+}
+
+export interface Props {
+  name?: string;
+  role?: string;
+  location?: string;
+  clearance?: string;
+  tagline?: string;
+  email?: string;
+  linkedin?: string;
+  github?: string;
+  website?: string;
+  pdfPath?: string;
+  skills?: Record<string, string[]>;
+  experience?: Exp[];
+  education?: Edu[];
+  awards?: string[];
+  keywords?: string[];
+  showStructuredData?: boolean;
+  /** If true, hides buttons and chrome for a tight embed */
+  compact?: boolean;
+}
+
+/* ---------- Helpers: transform resume.json -> component shape ---------- */
+type ResumeJSON = typeof resume;
+
+// Map resume.skills groups -> UI groups
+function mapSkills(json: ResumeJSON): Record<string, string[]> {
+  const groups: Record<string, string[]> = {};
+  const s = json.skills ?? {};
+  if (s.languages?.length) groups["Languages"] = s.languages;
+  if (s.frameworks?.length) groups["Frameworks"] = s.frameworks;
+  if (s.tools?.length) groups["Tools"] = s.tools;
+  if (s.concepts?.length) groups["Concepts"] = s.concepts;
+  return groups;
+}
+
+// Map resume.experience -> component Exp[]
+function mapExperience(json: ResumeJSON): Exp[] {
+  const src = json.experience ?? [];
+  return src.map((e) => ({
+    org: e.company,
+    title: e.role,
+    timeframe: e.period,
+    location: (e as any).location, // optional in resume.json
+    badges: undefined,             // not in json; users can override via props
+    bullets: e.details ?? [],
+  }));
+}
+
+// Map resume.education -> component Edu[]
+function mapEducation(json: ResumeJSON): Edu[] {
+  const src = json.education ?? [];
+  return src.map((e) => ({
+    school: e.institution,
+    degree: e.degree + (e.gpa ? ` (GPA ${e.gpa})` : ""),
+    timeframe: e.period,
+    details: e.achievements ?? [],
+  }));
+}
+
+// Certifications -> awards (string list)
+function mapAwards(json: ResumeJSON): string[] {
+  const certs = json.certifications ?? [];
+  return certs.map((c) =>
+    [c.title, c.issuer, c.year ? `(${c.year})` : ""].filter(Boolean).join(" — ")
+  );
+}
+
+// Derive keywords from skills (flatten & uniq)
+function deriveKeywords(skillsGroups: Record<string, string[]>): string[] {
+  const all = Object.values(skillsGroups).flat();
+  const uniq = Array.from(new Set(all));
+  return uniq.slice(0, 64); // cap for brevity
+}
+
+/* ---------- Read JSON defaults ---------- */
+const json = resume as ResumeJSON;
+const jsonBasics = json.basics ?? {};
+
+/* ---------- Props with JSON fallbacks ---------- */
+const {
+  name = (jsonBasics.name as string) ?? "Unnamed",
+  role = (jsonBasics.title as string) ?? "Professional",
+  location = (jsonBasics.location as string) ?? "",
+  clearance = "Data Analyst / Computer Scientist",
+  tagline = (jsonBasics.tagline as string) ?? "",
+  email = (jsonBasics.email as string) ?? "",
+  linkedin = (jsonBasics.linkedin as string) ?? "",
+  github = (jsonBasics.github as string) ?? "",
+  website = "",
+  pdfPath = "/Zeshan_Basaran_Resume.pdf",
+  skills = mapSkills(json),
+  experience = mapExperience(json),
+  education = mapEducation(json),
+  awards = mapAwards(json),
+  keywords = deriveKeywords(mapSkills(json)),
+  showStructuredData = true,
+  compact = false,
+} = Astro.props as Props;
+---
+
+{/* ---------- PANEL WRAPPER ---------- */}
+<section class="relative isolate overflow-hidden rounded-2xl border border-cyan-500/20 bg-slate-900/60 p-6 md:p-10 backdrop-blur">
+  <div class="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_20%_10%,rgba(14,165,233,.25),transparent_40%),radial-gradient(circle_at_80%_50%,rgba(59,130,246,.2),transparent_40%)]"></div>
+
+  {/* ---------- HEADER ---------- */}
+  <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+    <div>
+      <p class="font-mono text-xs uppercase tracking-widest text-cyan-300/80">User Profile: {name}</p>
+      <h2 class="mt-1 text-2xl font-bold leading-tight text-cyan-100 md:text-3xl">
+        Personnel File <span class="text-cyan-400">/</span> Resume
+      </h2>
+      {tagline && <p class="mt-2 max-w-2xl text-slate-300">{tagline}</p>}
+      <div class="mt-3 flex flex-wrap gap-2 text-sm text-slate-400">
+        {clearance && (
+          <span class="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 px-3 py-1 font-mono">
+            <span class="h-2 w-2 animate-pulse rounded-full bg-cyan-400"></span>
+            Clearance: {clearance}
+          </span>
+        )}
+        {role && <span class="rounded-full border border-cyan-500/30 px-3 py-1 font-mono">{role}</span>}
+        {location && <span class="rounded-full border border-cyan-500/30 px-3 py-1 font-mono">{location}</span>}
+      </div>
+    </div>
+
+    {!compact && (
+      <div class="flex items-center gap-2 print:hidden">
+        {pdfPath && (
+          <a
+            href={pdfPath}
+            class="group inline-flex items-center gap-2 rounded-xl border border-cyan-500/40 bg-cyan-500/10 px-4 py-2 font-medium text-cyan-200 transition hover:bg-cyan-500/20"
+            download
+          >
+            <svg class="h-4 w-4 transition group-hover:translate-y-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 16a1 1 0 0 1-.707-.293l-4-4a1 1 0 1 1 1.414-1.414L11 12.586V3a1 1 0 1 1 2 0v9.586l2.293-2.293a1 1 0 1 1 1.414 1.414l-4 4A1 1 0 0 1 12 16z"/><path d="M5 19a1 1 0 0 0 1 1h12a1 1 0 1 0 0-2H6a1 1 0 0 0-1 1z"/></svg>
+            Download PDF
+          </a>
+        )}
+        <button
+          class="inline-flex items-center gap-2 rounded-xl border border-slate-600/50 bg-slate-800/60 px-4 py-2 text-slate-200 transition hover:bg-slate-800"
+          onclick="window.print()"
+        >
+          <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"><path d="M6 2h12v6H6z"/><path d="M6 14h12v8H6z"/><path d="M4 8h16a2 2 0 0 1 2 2v4h-4v-2H6v2H2v-4a2 2 0 0 1 2-2z"/></svg>
+          Print
+        </button>
+      </div>
+    )}
+  </div>
+
+  {/* ---------- CONTACT ---------- */}
+  <div class="mt-6 grid gap-2 text-sm text-slate-300 md:grid-cols-4">
+    {email && (
+      <a class="group inline-flex items-center gap-2 hover:text-cyan-300" href={`mailto:${email}`}>
+        <span class="h-1.5 w-1.5 rounded-full bg-cyan-400"></span>{email}
+      </a>
+    )}
+    {linkedin && (
+      <a class="group inline-flex items-center gap-2 hover:text-cyan-300" href={linkedin} target="_blank" rel="noopener">
+        <span class="h-1.5 w-1.5 rounded-full bg-cyan-400"></span>LinkedIn
+      </a>
+    )}
+    {github && (
+      <a class="group inline-flex items-center gap-2 hover:text-cyan-300" href={github} target="_blank" rel="noopener">
+        <span class="h-1.5 w-1.5 rounded-full bg-cyan-400"></span>GitHub
+      </a>
+    )}
+    {website && (
+      <a class="group inline-flex items-center gap-2 hover:text-cyan-300" href={website} target="_blank" rel="noopener">
+        <span class="h-1.5 w-1.5 rounded-full bg-cyan-400"></span>Website
+      </a>
+    )}
+  </div>
+
+  {/* ---------- SKILLS ---------- */}
+  <section class="mt-8 rounded-2xl border border-cyan-500/10 bg-slate-950/40 p-6 md:p-8">
+    <h3 class="mb-4 font-mono text-sm uppercase tracking-widest text-cyan-300/80">Capabilities • Skill Matrix</h3>
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {Object.entries(skills).map(([group, tags]) => (
+        <div class="rounded-xl border border-slate-700/40 bg-slate-900/50 p-4">
+          <h4 class="text-base font-semibold text-cyan-200">{group}</h4>
+          <div class="mt-3 flex flex-wrap gap-2">
+            {tags.map((t) => (
+              <span class="rounded-md border border-cyan-500/20 bg-slate-800/60 px-2.5 py-1 text-xs text-slate-200">{t}</span>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  {/* ---------- EXPERIENCE (Timeline) ---------- */}
+  <section class="mt-8 rounded-2xl border border-cyan-500/10 bg-slate-950/40 p-6 md:p-8">
+    <h3 class="mb-6 font-mono text-sm uppercase tracking-widest text-cyan-300/80">Operational Log • Experience</h3>
+    <ol class="relative ml-3 border-l border-cyan-500/20 pl-6">
+      {experience.map((exp) => (
+        <li class="mb-10">
+          <div class="absolute -left-2.5 mt-1.5 h-2.5 w-2.5 rounded-full bg-cyan-400 ring-4 ring-cyan-400/20"></div>
+          <div class="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
+            <div>
+              <p class="text-cyan-200">{exp.title} <span class="text-slate-400">•</span> <span class="text-slate-300">{exp.org}</span></p>
+              {exp.location && <p class="text-sm text-slate-400">{exp.location}</p>}
+            </div>
+            <p class="font-mono text-xs text-slate-400">{exp.timeframe}</p>
+          </div>
+          {exp.badges && exp.badges.length > 0 && (
+            <div class="mt-3 flex flex-wrap gap-2">
+              {exp.badges.map((b) => (
+                <span class="rounded-full border border-cyan-500/20 bg-slate-900/60 px-2.5 py-0.5 text-xs text-slate-300">{b}</span>
+              ))}
+            </div>
+          )}
+          <ul class="mt-3 grid list-disc gap-2 pl-5 text-slate-200/90">
+            {exp.bullets.map((b) => <li>{b}</li>)}
+          </ul>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  {/* ---------- EDUCATION ---------- */}
+  <section class="mt-8 rounded-2xl border border-cyan-500/10 bg-slate-950/40 p-6 md:p-8">
+    <h3 class="mb-4 font-mono text-sm uppercase tracking-widest text-cyan-300/80">Academy Records • Education</h3>
+    <div class="grid gap-6 md:grid-cols-2">
+      {education.map((e) => (
+        <article class="rounded-xl border border-slate-700/40 bg-slate-900/50 p-5">
+          <h4 class="text-lg font-semibold text-cyan-100">{e.school}</h4>
+          <p class="mt-1 text-slate-300">{e.degree}</p>
+          <p class="font-mono text-xs text-slate-400">{e.timeframe}</p>
+          {e.details && e.details.length > 0 && (
+            <ul class="mt-3 list-disc space-y-1 pl-5 text-slate-200/90">
+              {e.details.map((d) => <li>{d}</li>)}
+            </ul>
+          )}
+        </article>
+      ))}
+    </div>
+  </section>
+
+  {/* ---------- AWARDS / HIGHLIGHTS (from certifications) ---------- */}
+  {awards && awards.length > 0 && (
+    <section class="mt-8 rounded-2xl border border-cyan-500/10 bg-slate-950/40 p-6 md:p-8">
+      <h3 class="mb-4 font-mono text-sm uppercase tracking-widest text-cyan-300/80">Highlights • Distinctions</h3>
+      <ul class="grid gap-2 md:grid-cols-2">
+        {awards.map((a) => (
+          <li class="rounded-lg border border-slate-700/40 bg-slate-900/50 px-4 py-3 text-slate-200">{a}</li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  {/* ---------- KEYWORDS (derived from skills, overrideable) ---------- */}
+  {keywords && keywords.length > 0 && (
+    <section class="mt-8 rounded-2xl border border-cyan-500/10 bg-slate-950/40 p-6 md:p-8 print:hidden">
+      <h3 class="mb-3 font-mono text-sm uppercase tracking-widest text-cyan-300/80">Indexed Keywords</h3>
+      <div class="flex flex-wrap gap-2">
+        {keywords.map((k) => (
+          <span class="rounded-md border border-cyan-500/20 bg-slate-900/60 px-2.5 py-1 text-xs text-slate-300">{k}</span>
+        ))}
+      </div>
+    </section>
+  )}
+
+  {/* ---------- SLOT (optional extension) ---------- */}
+  <slot />
+
+  {/* ---------- JSON-LD (optional) ---------- */}
+  {showStructuredData && (
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Person",
+      name,
+      jobTitle: role,
+      email: email ? `mailto:${email}` : undefined,
+      url: website || undefined,
+      sameAs: [linkedin, github].filter(Boolean),
+      address: location
+        ? { "@type": "PostalAddress", addressLocality: location, addressCountry: "US" }
+        : undefined
+    })} />
+  )}
+</section>
+
+{/* ---------- Scoped Styles ---------- */}
+<style is:global>
+  @media print {
+    .print\:hidden { display: none !important; }
+    a[href]:after { content: "" !important; }
+    body { background: white !important; }
+  }
+</style>

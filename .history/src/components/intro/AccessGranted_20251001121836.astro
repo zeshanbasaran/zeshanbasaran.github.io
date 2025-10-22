@@ -1,0 +1,36 @@
+---
+/**
+ * AccessGranted.astro
+ * Compact “terminal login” hero used on the home page.
+ * Props:
+ *  - title?: string
+ *  - subtitle?: string
+ */
+const {
+  title = "Analyzing patterns, engineering solutions, shaping the future.",
+  subtitle = "Data analysis, machine learning, and full-stack engineering stitched into clean, reproducible systems."
+} = Astro.props;
+
+const elId = "access-granted-root";
+---
+
+<section id={elId} class="hero">
+  <div class="hero-kicker">
+    <span class="badge-dot"></span>
+    ACCESS GRANTED
+  </div>
+
+  <h1 class="hero-title">{title}</h1>
+  <p class="hero-sub">{subtitle}</p>
+
+  <div class="mt-6 flex items-center justify-center gap-3">
+    <a href="/projects" class="btn-neon">Browse Projects</a>
+    <a href="/resume" class="pill"><span class="pill-dot"></span> View Resume</a>
+  </div>
+</section>
+
+<script>
+  // If you genuinely need to access the section element:
+  const root = document.getElementById("access-granted-root");
+  // You can safely manipulate `root` here if needed.
+</script>

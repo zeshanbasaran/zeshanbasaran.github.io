@@ -1,0 +1,53 @@
+---
+import "../styles/global.css";
+const {
+  title = "Project | Zeshan Basaran",
+  description = "Exploring my portfolio of projects in data science, machine learning, and software engineering.",
+} = Astro.props;
+---
+
+<html lang="en" class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+  </head>
+  <body class="bg-slate-950 text-slate-100 selection:bg-cyan-500/30">
+    <!-- NAV -->
+    <header class="navbar border-b border-white/10 backdrop-blur">
+      <div class="navbar-inner container mx-auto px-4 md:px-8 flex items-center justify-between h-16">
+        <a href="/" class="font-display text-lg tracking-wide text-white">Zeshan Basaran</a>
+        <nav class="nav-links flex gap-6 text-sm">
+          <a class="nav-link hover:text-cyan-400" href="/">Home</a>
+          <a class="nav-link hover:text-cyan-400" href="/projects">Projects</a>
+          <a class="nav-link hover:text-cyan-400" href="/resume">Resume</a>
+          <a class="nav-link hover:text-cyan-400" href="/about">About</a>
+          <a class="nav-link hover:text-cyan-400" href="/contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="relative bg-gradient-to-r from-cyan-600/20 via-fuchsia-600/10 to-transparent py-10">
+      <div class="container mx-auto px-4 md:px-8">
+        <a href="/projects" class="inline-flex items-center gap-2 text-sm text-cyan-300 hover:text-cyan-200 mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+          Back to Projects
+        </a>
+        <h1 class="text-3xl md:text-4xl font-bold tracking-tight">{title}</h1>
+        <p class="mt-2 max-w-3xl text-slate-300">{description}</p>
+      </div>
+    </section>
+
+    <!-- MAIN CONTENT -->
+    <main class="container mx-auto px-4 md:px-10 py-10">
+      <slot />
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="text-center text-sm text-white/60 container mx-auto px-4 md:px-8 py-6 border-t border-white/10">
+      © {new Date().getFullYear()} Zeshan Basaran • Built with Astro & Tailwind
+    </footer>
+  </body>
+</html>

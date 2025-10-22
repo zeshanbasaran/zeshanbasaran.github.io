@@ -1,0 +1,150 @@
+---
+/**
+ * src/components/resume/TimelineLogs.astro
+ * ------------------------------------------------------------
+ * Sci-Fi “System Log” Timeline Component (Experience/Education)
+ *
+ * Purpose:
+ *   • Reusable vertical timeline (“logs”) renderer used on the Resume page.
+ *   • Shows role/org, timeframe, location, badges, and bullet points.
+ *   • Tailwind-based neon/cyber styling with accessible markup.
+ *
+ * Usage:
+ *   <TimelineLogs
+ *     title="Operational Log • Experience"
+ *     items={[
+ *       {
+ *         org: "City of Baltimore",
+ *         title: "Incident & Problem Management Intern",
+ *         timeframe: "Jun 2023 – Dec 2023",
+ *         location: "Baltimore, MD",
+ *         badges: ["ITSM", "SLA Analytics", "SQL"],
+ *         bullets: [
+ *           "Monitored incident queues, triaged tickets, and analyzed root causes.",
+ *           "Built SQL-based reports for SLA adherence and category trends."
+ *         ]
+ *       }
+ *     ]}
+ *   />
+ *
+ * Notes:
+ *   • Keep this component purely presentational; no global layout or fetching.
+ *   • Use the “dense” flag to tighten spacing for compact embeds.
+ *   • You can pass any React/HTML fragment into <slot name="suffix" /> for
+ *     each item by pre-rendering it in the parent and spreading onto items
+ *     (see item.suffixHtml).
+ * ------------------------------------------------------------
+ */
+
+export interface TimelineItem {
+  org: string;
+  title: string;
+  timeframe: string;
+  location?: string;
+  badges?: string[];
+  bullets?: string[];
+  /** Optional raw HTML suffix for an item (e.g., links). Use sparingly. */
+  suffixHtml?: string;
+  /** Optional id for deep-linking */
+  id?: string;
+}
+
+export interface Props {
+  title?: string;
+  items: TimelineItem[];
+  /** When true, reduces spacing/padding for compact areas. */
+  dense?: boolean;
+  /** Hide bullet lists if you just want a clean timeline. */
+  hideBullets?: boolean;
+  /** Hide badges row. */
+  hideBadges?: boolean;
+  /** Adds a small index number chip at each node. */
+  showIndex?: boolean;
+}
+
+const {
+  title = "Operational Log",
+  items = [],
+  dense = false,
+  hideBullets = false,
+  hideBadges = false,
+  showIndex = false,
+} = Astro.props as Props;
+
+const liGap = dense ? "mb-6" : "mb-10";
+const sectionPad = dense ? "p-5 md:p-6" : "p-6 md:p-8";
+const bulletGap = dense ? "gap-1.5" : "gap-2";
+---
+
+<section class={`rounded-2xl border border-cyan-500/10 bg-slate-950/40 ${sectionPad}`}>
+  <h3 class="mb-6 font-mono text-sm uppercase tracking-widest text-cyan-300/80">{title}</h3>
+
+  {items.length === 0 ? (
+    <p class="text-sm text-slate-400">No records found.</p>
+  ) : (
+    <ol class="relative ml-3 border-l border-cyan-500/20 pl-6">
+      {items.map((exp, idx) => (
+        <li id={exp.id} class={`${liGap} group scroll-mt-24`}>
+          {/* Timeline node */}
+          <div
+            class="absolute -left-2.5 mt-1.5 flex h-2.5 w-2.5 items-center justify-center rounded-full bg-cyan-400 ring-4 ring-cyan-400/20"
+            aria-hidden="true"
+          />
+          {showIndex && (
+            <span class="absolute -left-10 mt-0.5 select-none rounded-md border border-cyan-500/30 bg-slate-900/70 px-1.5 py-0.5 text-[10px] font-mono text-cyan-200">
+              {String(idx + 1).padStart(2, "0")}
+            </span>
+          )}
+
+          {/* Header row */}
+          <div class="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
+            <div>
+              <p class="text-cyan-200">
+                {exp.title}
+                <span class="mx-2 text-slate-500">•</span>
+                <span class="text-slate-300">{exp.org}</span>
+              </p>
+              {exp.location && <p class="text-sm text-slate-400">{exp.location}</p>}
+            </div>
+            <p class="font-mono text-xs text-slate-400">{exp.timeframe}</p>
+          </div>
+
+          {/* Badges */}
+          {!hideBadges && exp.badges && exp.badges.length > 0 && (
+            <div class="mt-3 flex flex-wrap gap-2">
+              {exp.badges.map((b) => (
+                <span class="rounded-full border border-cyan-500/20 bg-slate-900/60 px-2.5 py-0.5 text-xs text-slate-300">
+                  {b}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* Bullets */}
+          {!hideBullets && exp.bullets && exp.bullets.length > 0 && (
+            <ul class={`mt-3 grid list-disc ${bulletGap} pl-5 text-slate-200/90`}>
+              {exp.bullets.map((b) => <li>{b}</li>)}
+            </ul>
+          )}
+
+          {/* Optional suffix HTML (e.g., links). */}
+          {exp.suffixHtml && (
+            <div class="mt-3 text-sm text-slate-300" set:html={exp.suffixHtml} />
+          )}
+
+          {/* Hover accent line */}
+          <div class="pointer-events-none mt-4 h-px w-full bg-gradient-to-r from-cyan-500/30 via-transparent to-transparent opacity-0 transition group-hover:opacity-100" />
+        </li>
+      ))}
+    </ol>
+  )}
+</section>
+
+<style is:global>
+  @media print {
+    /* Cleaner print: remove hover accents and neon rings */
+    .group .bg-gradient-to-r { display: none !important; }
+    .ring-cyan-400\/20 { box-shadow: none !important; }
+    a[href]:after { content: "" !important; }
+  }
+</style>

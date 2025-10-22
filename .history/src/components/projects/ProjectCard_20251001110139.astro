@@ -1,0 +1,155 @@
+---
+/**
+ * =============================================================================
+ * File: src/components/projects/ProjectCard.astro
+ * Author: (Your Name)
+ * Project: Sci-Fi Portfolio Website — Zeshan Basaran
+ *
+ * Component:
+ *   ProjectCard — reusable holographic card for displaying a single project.
+ *   Intended to be used inside `src/pages/projects.astro` or anywhere else
+ *   you want to show a project as a “mission file.”
+ *
+ * Props:
+ *   - id: string
+ *       Unique ID for the project (used for keys, data attributes).
+ *
+ *   - title: string
+ *       Project title.
+ *
+ *   - category: string
+ *       Category label (e.g., "Data Analysis", "Machine Learning").
+ *
+ *   - summary: string
+ *       Short description of the project.
+ *
+ *   - href: string
+ *       URL or route to the project details page.
+ *
+ *   - tech: string[]
+ *       List of technology tags (Python, SQL, Tailwind, etc.).
+ *
+ *   - spark: number[]
+ *       Small numeric series for drawing a tiny sparkline chart.
+ *
+ *   - year?: number
+ *       Year of the project.
+ *
+ *   - stars?: number
+ *       Optional star/popularity count.
+ *
+ * Notes:
+ *   - Hover produces a glowing radial gradient following the pointer.
+ *   - Sparkline is a simple inline SVG, with a trailing circle at last point.
+ *   - All props are required except year/stars.
+ * =============================================================================
+ */
+
+export interface Props {
+  id: string;
+  title: string;
+  category: string;
+  summary: string;
+  href: string;
+  tech: string[];
+  spark: number[];
+  year?: number;
+  stars?: number;
+}
+
+const { id, title, category, summary, href, tech, spark, year, stars } = Astro.props;
+
+// Derived sparkline path
+function sparkPath(values: number[]): string {
+  if (values.length < 2) return "";
+  const max = Math.max(...values);
+  const min = Math.min(...values);
+  const rng = Math.max(1, max - min);
+  const step = 120 / (values.length - 1);
+  const toY = (v: number) => 30 - ((v - min) / rng) * 26;
+  return values.map((v, i) => `${i === 0 ? "M" : "L"} ${i * step},${toY(v)}`).join(" ");
+}
+
+const lastPoint = (() => {
+  if (spark.length === 0) return { x: 0, y: 0 };
+  const max = Math.max(...spark);
+  const min = Math.min(...spark);
+  const rng = Math.max(1, max - min);
+  const step = 120 / (spark.length - 1);
+  const x = step * (spark.length - 1);
+  const y = 30 - ((spark.at(-1)! - min) / rng) * 26;
+  return { x, y };
+})();
+---
+
+<a
+  href={href}
+  class="group relative isolate overflow-hidden rounded-2xl border border-cyan-300/10 bg-[#0a1024]/60 p-5 shadow-[0_0_0_1px_rgba(34,211,238,0.05)_inset] ring-1 ring-cyan-300/10 transition hover:border-cyan-300/20 hover:ring-cyan-300/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+  data-category={category}
+  data-title={title.toLowerCase()}
+  data-summary={summary.toLowerCase()}
+  data-tech={tech.join(" ").toLowerCase()}
+  data-year={String(year ?? "")}
+  data-stars={String(stars ?? 0)}
+>
+  <!-- Hover glow -->
+  <div
+    class="pointer-events-none absolute -inset-12 -z-10 opacity-0 blur-3xl transition duration-500 group-hover:opacity-30"
+    style="background: radial-gradient(600px circle at var(--x,50%) var(--y,50%), rgba(34,211,238,.25), transparent 40%);"
+    aria-hidden="true"
+  ></div>
+
+  <!-- Header row -->
+  <div class="flex items-start justify-between gap-4">
+    <span class="rounded-md border border-cyan-300/20 bg-cyan-300/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-cyan-200">
+      {category}
+    </span>
+    {year && <span class="text-xs text-slate-500">{year}</span>}
+  </div>
+
+  <!-- Title & summary -->
+  <h3 class="mt-3 text-base font-semibold text-slate-100">{title}</h3>
+  <p class="mt-1 line-clamp-3 text-sm text-slate-400">{summary}</p>
+
+  <!-- Tech badges -->
+  <div class="mt-3 flex flex-wrap gap-1.5">
+    {tech.map((t) => (
+      <span class="rounded-md border border-slate-600/30 bg-slate-600/10 px-2 py-0.5 text-[10px] text-slate-300">{t}</span>
+    ))}
+  </div>
+
+  <!-- Sparkline -->
+  {spark.length > 0 && (
+    <div class="mt-4 rounded-xl border border-cyan-300/10 bg-black/20 p-3">
+      <svg viewBox="0 0 120 36" class="h-16 w-full">
+        <line x1="0" y1="32" x2="120" y2="32" class="stroke-slate-600/40" stroke-width="1" />
+        <path d={sparkPath(spark)} class="fill-none stroke-cyan-300/80" stroke-width="1.5" />
+        <circle cx={lastPoint.x} cy={lastPoint.y} r="2.5" class="fill-cyan-200" />
+      </svg>
+      <div class="mt-1 flex items-center justify-between text-[11px] text-slate-500">
+        <span>Mini preview</span>
+        {typeof stars === "number" && (
+          <span class="inline-flex items-center gap-1">
+            ★ <span class="tabular-nums">{stars}</span>
+          </span>
+        )}
+      </div>
+    </div>
+  )}
+
+  <!-- Hover ring -->
+  <div class="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-cyan-400/0 transition duration-500 group-hover:ring-cyan-400/30"></div>
+</a>
+
+<!-- Hover glow follows pointer -->
+<script is:inline>
+  (function () {
+    const card = document.currentScript?.closest('a');
+    if (!card) return;
+    card.addEventListener('pointermove', (e) => {
+      const r = card.getBoundingClientRect();
+      card.style.setProperty('--x', (e.clientX - r.left) + 'px');
+      card.style.setProperty('--y', (e.clientY - r.top) + 'px');
+    });
+  })();
+</script>

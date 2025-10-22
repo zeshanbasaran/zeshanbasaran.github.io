@@ -1,0 +1,137 @@
+{
+  "basics": {
+    "name": "Zeshan Basaran",
+    "title": "Data Analyst / Software Engineer",
+    "tagline": "I analyze data, engineer software, and build intelligent systems.",
+    "location": "Baltimore, MD",
+    "email": "zeshan.basaran@gmail.com",
+    "github": "https://github.com/zeshanbasaran",
+    "linkedin": "https://linkedin.com/in/zeshanbasaran"
+  },
+
+  "skills": {
+    "languages": ["Python", "Java", "HTML / CSS", "C++", "Kotlin", "SQL", "MATLAB", "JavaScript", "TypeScript", "LaTeX", "Bash / Shell"],
+    "frameworks": ["Astro", "React", "TailwindCSS", "Node.js", "Streamlit", "Dash", "Tableau", "Express.js", "Flask / FastAPI", "Pandas / NumPy / Scikik-learn", "Plotly / Seaborn / Matplotlib"],
+    "tools": ["Git/GitHub", "Docker", "Firebase", "MySQL", "PostgreSQL", "SQLite", "Jupyter", "VS Code", "Linux / Ubuntu"],
+    "concepts": ["Machine Learning", "Data Visualization", "Natural Language Processing", "Quantitative Finance", "Simulation Modeling"]
+  },
+
+  "experience": [
+    {
+      "company": "True Chesapeake",
+      "role": "Server",
+      "period": "February 2025 - Present",
+      "details": [
+        "Provided high-quality service to elite guests, such as US senators and political candidates.",
+        "Consistently received 5 star reviews and averaged over 20% on tips."
+      ]
+    },
+    {
+      "company": "Carroll County Public Library",
+      "role": "Coding Workshop Mentor",
+      "period": "2023",
+      "details": [
+        "Assisted a week-long coding workshop for middle and high schoolers.",
+        "Provided one-on-one guidance and supported the participants as they worked through coding exercises and projects, leading to a 100% completion rate for all 30 coding exercises.",
+        "Acted as a mentor and role model for 30 aspiring programmers by fostering a positive and inclusive learning environment."
+      ]
+    },
+    {
+      "company": "Cypriana & Olive Garden",
+      "role": "Bartender / Server",
+      "period": "2022 – 2024",
+      "details": [
+        "Worked in fast-paced hospitality environments balancing customer service and multitasking.",
+        "Demonstrated strong teamwork and communication skills."
+      ]
+    }
+  ],
+
+  "education": [
+    {
+      "institution": "Towson University",
+      "degree": "B.S. Computer Science",
+      "period": "2021 – 2025",
+      "gpa": "3.6",
+      "achievements": [
+        "Dean’s List",
+        "Director of Fundraising (2024-5), National Student Data Corp",
+        "Finalist (2024) & 2nd Place Winner (2025), Towson Data Analytics Competition"
+      ]
+    },
+    {
+      "institution": "Virginia Tech",
+      "degree": "Coursework toward B.S. in Engineering",
+      "period": "2020 – 2021",
+      "gpa": "3.1"
+    },
+    {
+      "institution": "Francis Scott Key High School",
+      "degree": "High School Diploma",
+      "period": "2016 – 2020",
+      "gpa": "4.0",
+      "achievements": [
+        "Honors and AP Classes",
+        "National Honors Society President",
+        "Mock Trial Lawyer",
+        "Girls Soccer and Track",
+        "Theater Productions"
+      ]
+    }
+  ],
+
+  "projects": [
+    {
+      "name": "Translator: Morse ↔ Binary ↔ English",
+      "link": "https://github.com/zeshanbasaran/Translator_Morse-Binary-English",
+      "description": "Java project using abstract classes and polymorphism to translate between multiple code systems."
+    },
+    {
+      "name": "Movie Sentiment Analysis",
+      "link": "https://github.com/zeshanbasaran/movieSentimentAnalysis",
+      "description": "Python NLP project analyzing IMDB reviews using scikit-learn classifiers."
+    },
+    {
+      "name": "Sensor Data Analysis",
+      "link": "https://github.com/zeshanbasaran/SensorDataAnalysis",
+      "description": "Python program analyzing glutamate sensor data for the Allen Institute."
+    },
+    {
+      "name": "Systematic Trading Backtester",
+      "link": "https://github.com/zeshanbasaran",
+      "description": "Python engine for backtesting SMA/Bollinger strategies with SQLite/MySQL/Postgres integration."
+    }
+  ],
+
+  "certifications": [
+    {
+      "title": "Data Analytics Competition (TU)",
+      "issuer": "Towson University",
+      "year": 2024,
+      "details": "Presented 10-minute analysis on DAP marketing data."
+    }
+  ],
+
+  "timeline": [
+    {
+      "year": "2021",
+      "event": "Enrolled at Towson University, Computer Science major."
+    },
+    {
+      "year": "2023",
+      "event": "Internship at City of Baltimore, Incident/Problem Management."
+    },
+    {
+      "year": "2023",
+      "event": "Mentored at Carroll County Public Library coding workshop."
+    },
+    {
+      "year": "2024",
+      "event": "TU Data Analytics Competition presentation."
+    },
+    {
+      "year": "2025",
+      "event": "Graduated Towson University, B.S. Computer Science."
+    }
+  ]
+}

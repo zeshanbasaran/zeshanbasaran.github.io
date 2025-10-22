@@ -1,0 +1,336 @@
+---
+/**
+ * =============================================================================
+ * File: src/pages/index.astro
+ * Author: (Your Name)
+ * Project: Sci-Fi Portfolio Website — Zeshan Basaran
+ *
+ * Description:
+ *   Home / Landing page. Presents an "Access Granted" boot screen with
+ *   terminal-style intro, a hero with the site tagline, featured projects
+ *   displayed as holographic "mission files" (with miniature sparkline
+ *   chart previews), and quick links to Resume, About, and Contact.
+ *
+ *   This page uses the global Base layout and Tailwind CSS classes.
+ *   Animations are lightweight (CSS + a tiny inline script) and respect
+ *   reduced-motion preferences.
+ *
+ * Sections:
+ *   1) Access Gate (boot overlay with typewriter "ACCESS GRANTED")
+ *   2) Hero (tagline + quick telemetry cards)
+ *   3) Projects Hub (tabs: Data Analysis, Machine Learning, Software Eng.)
+ *   4) Callouts (Resume, About, Contact)
+ *
+ * Props / Data:
+ *   For now, project cards are hard-coded with placeholders that you can
+ *   replace with real content. Each card includes:
+ *     - title, badge, description, href, and a tiny inline sparkline.
+ *
+ * Notes:
+ *   - If you add client-side libraries later (Plotly/Chart.js), swap out
+ *     the sparkline SVGs for live charts.
+ *   - Keep IDs stable (#projects, #contact) so the navbar can anchor-link.
+ * =============================================================================
+ */
+
+import Base from "../layouts/Base.astro";
+
+// Featured projects (edit freely)
+const projects = [
+  {
+    id: "p1",
+    title: "Systematic Trading Backtester",
+    badge: "Data Analysis",
+    desc: "Modular backtesting engine with Streamlit dashboards, risk metrics, and YAML configs.",
+    href: "/projects/backtester",
+    spark: [10, 14, 9, 15, 18, 22, 19, 24, 28, 26, 31, 35],
+  },
+  {
+    id: "p2",
+    title: "Factor Analytics Platform",
+    badge: "Machine Learning",
+    desc: "Multi-factor pipeline (value/momentum/quality), ETL scripts, Dash UI, SQL schema.",
+    href: "/projects/factors",
+    spark: [8, 7, 9, 13, 12, 16, 20, 22, 21, 25, 27, 30],
+  },
+  {
+    id: "p3",
+    title: "Lost & Found Web App",
+    badge: "Software Engineering",
+    desc: "MySQL + Tailwind + Node/Express stack with admin tools and email notifications.",
+    href: "/projects/lost-and-found",
+    spark: [5, 6, 5, 8, 12, 11, 15, 18, 17, 20, 24, 29],
+  },
+];
+
+// Tab groups (keys must match project.badge)
+const tabs = ["Data Analysis", "Machine Learning", "Software Engineering"];
+---
+
+<Base title="Home" description="Analyzing patterns, engineering solutions, shaping the future.">
+  <Fragment slot="head">
+    <!-- Page-specific head (optional): preload a font or image if you like -->
+    <meta name="keywords" content="Zeshan Basaran, data analysis, machine learning, software engineering, portfolio" />
+  </Fragment>
+
+  <!-- ===================================================================== -->
+  <!-- (1) ACCESS GATE: Boot overlay with 'ACCESS GRANTED' terminal sequence  -->
+  <!-- ===================================================================== -->
+  <section
+    id="access-gate"
+    class="fixed inset-0 z-50 grid place-items-center bg-black/90 text-emerald-200 data-[hidden=true]:pointer-events-none data-[hidden=true]:opacity-0"
+    data-hidden="false"
+  >
+    <div class="mx-6 w-full max-w-2xl rounded-2xl border border-emerald-400/30 bg-black/40 p-6 shadow-lg ring-1 ring-emerald-400/20">
+      <div class="font-mono text-sm leading-6 text-emerald-200/90">
+        <p class="opacity-70">> INIT SYS: /usr/local/zb-terminal… OK</p>
+        <p class="opacity-70">> LOADING SECURE MODULES… OK</p>
+        <p class="opacity-70">> VERIFYING CREDENTIALS… OK</p>
+        <div class="mt-4 h-[2px] w-full overflow-hidden rounded bg-emerald-400/20">
+          <div class="h-full w-0 animate-[loadbar_1.6s_ease-out_forwards] bg-emerald-400/70"></div>
+        </div>
+
+        <p class="mt-5 text-lg font-semibold tracking-widest text-emerald-300">
+          <span id="gate-type" class="border-b border-emerald-300/40 pb-1 [--caret:currentColor] after:ml-1 after:inline-block after:animate-[blink_1s_steps(1)_infinite] after:content-['▍']">
+            ACCESS GRANTED
+          </span>
+        </p>
+
+        <p class="mt-2 text-emerald-300/80">
+          Welcome, <span class="font-semibold text-emerald-200">Zeshan</span>. Redirecting to main interface…
+        </p>
+      </div>
+    </div>
+
+    <!-- Gate Animations -->
+    <style is:global>
+      @keyframes loadbar { to { width: 100% } }
+      @keyframes blink { 50% { opacity: .2 } }
+      /* Respect reduced motion */
+      @media (prefers-reduced-motion: reduce) {
+        #access-gate * { animation: none !important; transition: none !important; }
+      }
+    </style>
+
+    <!-- Auto-dismiss after a short delay (skippable by click/keydown) -->
+    <script is:inline>
+      (function () {
+        const gate = document.getElementById('access-gate');
+        const dismiss = () => { if (!gate) return; gate.dataset.hidden = "true"; };
+        // Auto-dismiss after 1.8s
+        const t = setTimeout(dismiss, 1800);
+        // Allow manual skip
+        ['click','keydown'].forEach(evt => window.addEventListener(evt, () => { clearTimeout(t); dismiss(); }, { once: true }));
+      })();
+    </script>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- (2) HERO: Tagline + quick telemetry                                   -->
+  <!-- ===================================================================== -->
+  <section aria-labelledby="hero-title" class="relative">
+    <div class="relative overflow-hidden rounded-3xl border border-cyan-300/10 bg-gradient-to-br from-[#0b1026]/70 to-[#050914]/70 p-8 ring-1 ring-cyan-300/10 md:p-12">
+      <!-- holographic accent -->
+      <div class="pointer-events-none absolute -top-20 right-0 h-56 w-56 rounded-full bg-cyan-400/20 blur-3xl"></div>
+
+      <h1 id="hero-title" class="text-balance bg-gradient-to-r from-cyan-200 to-indigo-200 bg-clip-text text-4xl font-extrabold text-transparent sm:text-5xl">
+        Analyzing patterns, engineering solutions, shaping the future.
+      </h1>
+      <p class="mt-4 max-w-2xl text-pretty text-slate-400">
+        Data analysis, machine learning, and full-stack engineering stitched into clean, reproducible systems.
+      </p>
+
+      <!-- Quick telemetry -->
+      <div class="mt-8 grid gap-4 sm:grid-cols-3">
+        <div class="rounded-2xl border border-cyan-300/10 bg-cyan-400/5 p-4">
+          <p class="text-xs uppercase tracking-wide text-cyan-300/80">Primary Stack</p>
+          <p class="mt-1 text-sm text-slate-300">Python · SQL · Astro · Tailwind</p>
+        </div>
+        <div class="rounded-2xl border border-indigo-300/10 bg-indigo-400/5 p-4">
+          <p class="text-xs uppercase tracking-wide text-indigo-300/80">Focus</p>
+          <p class="mt-1 text-sm text-slate-300">Backtesting · Factor Models · Dashboards</p>
+        </div>
+        <div class="rounded-2xl border border-emerald-300/10 bg-emerald-400/5 p-4">
+          <p class="text-xs uppercase tracking-wide text-emerald-300/80">Clearance</p>
+          <p class="mt-1 text-sm text-slate-300">Data Analyst / Computer Scientist</p>
+        </div>
+      </div>
+
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="#projects" class="rounded-xl border border-cyan-300/20 bg-cyan-300/10 px-4 py-2 text-sm text-cyan-100 ring-1 ring-cyan-300/20 hover:bg-cyan-300/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400">
+          Browse Projects
+        </a>
+        <a href="/resume" class="rounded-xl border border-slate-300/10 bg-slate-300/5 px-4 py-2 text-sm text-slate-200 hover:bg-slate-300/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400">
+          View Resume
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- (3) PROJECTS HUB: Tabs + "mission report" cards with chart thumbnails  -->
+  <!-- ===================================================================== -->
+  <section id="projects" aria-labelledby="proj-title" class="mt-14 md:mt-20">
+    <div class="mb-6 flex items-end justify-between gap-4">
+      <div>
+        <h2 id="proj-title" class="text-balance text-2xl font-bold text-cyan-100 sm:text-3xl">Projects Hub</h2>
+        <p class="mt-1 text-sm text-slate-400">Each project is a data file / mission report. Hover for holographic glow.</p>
+      </div>
+
+      <!-- Tabs -->
+      <div class="flex gap-2">
+        {tabs.map((t, i) => (
+          <button
+            class="proj-tab rounded-xl border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-xs text-cyan-100 ring-1 ring-cyan-300/10 data-[active=true]:bg-cyan-400/20 hover:bg-cyan-300/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+            data-tab={t}
+            data-active={i === 0}
+            aria-pressed={i === 0}
+          >
+            {t}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <!-- Cards grid -->
+    <div id="proj-grid" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {projects.map((p) => (
+        <a
+          href={p.href}
+          class="group relative isolate overflow-hidden rounded-2xl border border-cyan-300/10 bg-[#0a1024]/60 p-5 shadow-[0_0_0_1px_rgba(34,211,238,0.05)_inset] ring-1 ring-cyan-300/10 transition hover:border-cyan-300/20 hover:ring-cyan-300/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+          data-badge={p.badge}
+        >
+          <!-- glow -->
+          <div class="pointer-events-none absolute -inset-12 -z-10 opacity-0 blur-3xl transition duration-500 group-hover:opacity-30"
+               style="background: radial-gradient(600px circle at var(--x,50%) var(--y,50%), rgba(34,211,238,.25), transparent 40%);"></div>
+
+          <div class="flex items-center justify-between">
+            <span class="rounded-md border border-cyan-300/20 bg-cyan-300/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-cyan-200">
+              {p.badge}
+            </span>
+            <span class="text-xs text-slate-500">#{p.id}</span>
+          </div>
+
+          <h3 class="mt-3 text-base font-semibold text-slate-100">{p.title}</h3>
+          <p class="mt-1 line-clamp-3 text-sm text-slate-400">{p.desc}</p>
+
+          <!-- Tiny sparkline "chart" -->
+          <div class="mt-4 rounded-xl border border-cyan-300/10 bg-black/20 p-3">
+            <svg viewBox="0 0 120 36" class="h-16 w-full">
+              <!-- Axis baseline -->
+              <line x1="0" y1="32" x2="120" y2="32" class="stroke-slate-600/40" stroke-width="1" />
+              <!-- Sparkline path -->
+              {
+                // Simple path generator for the spark array
+                (() => {
+                  const vals = p.spark;
+                  const max = Math.max(...vals);
+                  const min = Math.min(...vals);
+                  const rng = Math.max(1, max - min);
+                  const step = 120 / (vals.length - 1);
+                  const toY = (v) => 30 - ((v - min) / rng) * 26; // 2px top/bot padding
+                  const d = vals.map((v, idx) => `${idx === 0 ? 'M' : 'L'} ${idx * step},${toY(v)}`).join(' ');
+                  return <path d={d} class="fill-none stroke-cyan-300/80" stroke-width="1.5" />;
+                })()
+              }
+              <!-- End point dot -->
+              {
+                (() => {
+                  const vals = p.spark;
+                  const max = Math.max(...vals);
+                  const min = Math.min(...vals);
+                  const rng = Math.max(1, max - min);
+                  const step = 120 / (vals.length - 1);
+                  const x = step * (vals.length - 1);
+                  const y = 30 - ((vals.at(-1) - min) / rng) * 26;
+                  return <circle cx={x} cy={y} r="2.5" class="fill-cyan-200" />;
+                })()
+              }
+            </svg>
+            <p class="mt-1 text-[11px] text-slate-500">Mini preview — trend over recent periods</p>
+          </div>
+
+          <!-- Hover ring -->
+          <div class="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-cyan-400/0 transition duration-500 group-hover:ring-cyan-400/30"></div>
+        </a>
+      ))}
+    </div>
+
+    <!-- Tab filter script: filters cards by data-badge -->
+    <script is:inline>
+      (function () {
+        const grid = document.getElementById('proj-grid');
+        const tabs = Array.from(document.querySelectorAll('.proj-tab'));
+        const cards = Array.from(grid?.children || []);
+        if (!grid) return;
+
+        function setActive(tab) {
+          tabs.forEach(b => { b.dataset.active = (b === tab) ? "true" : "false"; b.setAttribute('aria-pressed', b === tab ? 'true':'false'); });
+        }
+
+        function filterBy(label) {
+          cards.forEach(card => {
+            const ok = label ? (card.getAttribute('data-badge') === label) : true;
+            card.style.display = ok ? '' : 'none';
+          });
+        }
+
+        tabs.forEach(tab => {
+          tab.addEventListener('click', () => { setActive(tab); filterBy(tab.getAttribute('data-tab')); });
+        });
+
+        // Hover glow follows pointer
+        grid.addEventListener('pointermove', (e) => {
+          const t = e.target.closest('a');
+          if (!t) return;
+          const r = t.getBoundingClientRect();
+          t.style.setProperty('--x', (e.clientX - r.left) + 'px');
+          t.style.setProperty('--y', (e.clientY - r.top) + 'px');
+        });
+      })();
+    </script>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- (4) CALLOUTS: Quick links to resume, about, contact                    -->
+  <!-- ===================================================================== -->
+  <section class="mt-16 grid gap-6 lg:grid-cols-3">
+    <a href="/resume" class="group rounded-2xl border border-cyan-300/10 bg-cyan-400/5 p-5 ring-1 ring-cyan-300/10 transition hover:border-cyan-300/20 hover:ring-cyan-300/20">
+      <h3 class="text-lg font-semibold text-cyan-100">Personnel File: Resume</h3>
+      <p class="mt-1 text-sm text-slate-300">Classified dossier — skills, experience, education, and a timeline of system logs.</p>
+      <span class="mt-3 inline-flex items-center gap-2 text-sm text-cyan-300">Open dossier <span aria-hidden>→</span></span>
+    </a>
+
+    <a href="/about" class="group rounded-2xl border border-indigo-300/10 bg-indigo-400/5 p-5 ring-1 ring-indigo-300/10 transition hover:border-indigo-300/20 hover:ring-indigo-300/20">
+      <h3 class="text-lg font-semibold text-indigo-100">User Profile: Zeshan Basaran</h3>
+      <p class="mt-1 text-sm text-slate-300">Researcher’s log: Specialization in Pattern Recognition & Predictive Modeling.</p>
+      <span class="mt-3 inline-flex items-center gap-2 text-sm text-indigo-300">View profile <span aria-hidden>→</span></span>
+    </a>
+
+    <a href="/contact" class="group rounded-2xl border border-emerald-300/10 bg-emerald-400/5 p-5 ring-1 ring-emerald-300/10 transition hover:border-emerald-300/20 hover:ring-emerald-300/20">
+      <h3 class="text-lg font-semibold text-emerald-100">Open Channel: Contact</h3>
+      <p class="mt-1 text-sm text-slate-300">Ping for collaborations, data projects, or engineering roles.</p>
+      <span class="mt-3 inline-flex items-center gap-2 text-sm text-emerald-300">Establish link <span aria-hidden>→</span></span>
+    </a>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- (5) CONTACT TEASER                                                     -->
+  <!-- ===================================================================== -->
+  <section id="contact" class="mt-16">
+    <div class="rounded-3xl border border-cyan-300/10 bg-[#0a1024]/50 p-6 ring-1 ring-cyan-300/10 md:p-10">
+      <h2 class="text-balance text-2xl font-bold text-cyan-100 sm:text-3xl">Have a mission in mind?</h2>
+      <p class="mt-1 max-w-2xl text-sm text-slate-400">
+        I’m always interested in tough data problems, model diagnostics, and production-grade pipelines.
+      </p>
+      <div class="mt-6 flex flex-wrap gap-3">
+        <a href="/contact" class="rounded-xl border border-cyan-300/20 bg-cyan-300/10 px-4 py-2 text-sm text-cyan-100 ring-1 ring-cyan-300/20 hover:bg-cyan-300/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400">
+          Send a message
+        </a>
+        <a href="mailto:zeshan@example.com" class="rounded-xl border border-slate-300/10 bg-slate-300/5 px-4 py-2 text-sm text-slate-200 hover:bg-slate-300/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400">
+          Email me
+        </a>
+      </div>
+    </div>
+  </section>
+</Base>

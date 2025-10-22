@@ -1,0 +1,261 @@
+---
+/**
+ * src/pages/about.astro
+ * ------------------------------------------------------------
+ * "User Profile: Zeshan Basaran" — Researcher’s Log (About Page)
+ *
+ * Purpose:
+ *   • A sci-fi themed bio page written like a researcher’s log entry.
+ *   • Highlights specialization, interests, values, and current missions.
+ *   • Clean, print-aware, Tailwind-styled and ready for Base.astro layout.
+ *
+ * Conventions:
+ *   • Uses <Base> layout with title/description props.
+ *   • Neon/glassmorphism accents; accessible semantic HTML.
+ *   • Drop an image at /public/avatar.webp (or change AVATAR_PATH).
+ *
+ * Notes:
+ *   • Update links, socials, and content to your actual details.
+ *   • This page avoids client hydration; pure HTML/CSS + a dash of JSON-LD.
+ * ------------------------------------------------------------
+ */
+
+import Base from "../layouts/Base.astro";
+
+// --------- Editable Profile Data -------------------------------------------
+const NAME = "Zeshan Basaran";
+const TAGLINE = "Analyzing patterns, engineering solutions, shaping the future.";
+const ROLE = "Data Analyst & Software Engineer";
+const LOCATION = "Baltimore, MD, USA";
+const SPECIALIZATION = "Pattern Recognition & Predictive Modeling";
+const CLEARANCE = "Data Analyst / Computer Scientist";
+const AVATAR_PATH = "/avatar.webp"; // put a square-ish image in /public
+
+const CONTACTS = [
+  { label: "Email", href: "mailto:zeshan.basaran@example.com" },
+  { label: "GitHub", href: "https://github.com/zeshanbasaran" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/zeshanbasaran" },
+  { label: "Resume", href: "/resume" },
+];
+
+const CORE_STACK = [
+  "Python", "Pandas/NumPy", "scikit-learn", "Plotly/Dash/Streamlit",
+  "SQL (SQLite/MySQL/Postgres)", "Docker", "Astro", "Tailwind CSS"
+];
+
+const INTERESTS = [
+  "Quant research & systematic trading",
+  "Data visualization & dashboards",
+  "NLP and information retrieval",
+  "Systems design & testability",
+  "Human-centered, explainable tooling",
+];
+
+const FUN = [
+  "Mediterranean cooking & coffee rituals",
+  "Gym + StairMaster enjoyer, soccer drills",
+  "Learning Turkish (günlük pratik!)",
+  "Helping peers at coding workshops",
+];
+
+const NOW_NEXT = {
+  now: [
+    "Polishing a sci-fi themed portfolio with Astro + Tailwind.",
+    "Hardening a factor analytics pipeline for multi-factor screens.",
+    "Turning backtest notebooks into reusable, tested modules.",
+  ],
+  next: [
+    "Deploying a small SQLite→Postgres migration utility.",
+    "Adding feature stores & experiment tracking to models.",
+    "Publishing a write-up on defensible analytics for dashboards.",
+  ],
+};
+
+const LOG_ENTRIES = [
+  {
+    stamp: "LOG 001",
+    title: "Origin Protocol",
+    body:
+      "Began as a curious tinkerer. Found patterns in messy datasets and realized I love turning ambiguity into signal.",
+  },
+  {
+    stamp: "LOG 014",
+    title: "Tooling Over Toil",
+    body:
+      "If I do something twice, I automate it. If I do it thrice, I document it. If others will do it, I test it.",
+  },
+  {
+    stamp: "LOG 029",
+    title: "The Analyst’s Oath",
+    body:
+      "Be precise, reproducible, and explainable. Findings should survive scrutiny and help decisions, not decorate slides.",
+  },
+];
+---
+
+<Base title="About — User Profile" description="A sci-fi research log: who I am, what I build, and the systems I’m evolving.">
+  {/* ---------- HERO ---------- */}
+  <header class="relative isolate overflow-hidden rounded-2xl border border-cyan-500/20 bg-slate-900/60 p-6 md:p-10 backdrop-blur">
+    <div class="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(80%_60%_at_20%_10%,rgba(14,165,233,.25),transparent_50%),radial-gradient(60%_60%_at_85%_40%,rgba(59,130,246,.18),transparent_50%)]"></div>
+
+    <div class="flex flex-col items-start gap-6 md:flex-row md:items-center">
+      <figure class="relative">
+        <img
+          src={AVATAR_PATH}
+          alt={`${NAME} avatar`}
+          width="128"
+          height="128"
+          class="h-28 w-28 rounded-2xl object-cover ring-4 ring-cyan-400/30"
+          loading="eager"
+        />
+        <span class="pointer-events-none absolute -inset-1 -z-10 rounded-3xl bg-cyan-400/10 blur-xl"></span>
+      </figure>
+
+      <div class="flex-1">
+        <p class="font-mono text-xs uppercase tracking-widest text-cyan-300/80">User Profile: {NAME}</p>
+        <h1 class="mt-1 text-3xl font-bold text-cyan-100 md:text-4xl">
+          Researcher’s Log <span class="text-cyan-400">/</span> About
+        </h1>
+        <p class="mt-2 max-w-2xl text-slate-300">{TAGLINE}</p>
+        <div class="mt-3 flex flex-wrap items-center gap-2 text-sm text-slate-400">
+          <span class="rounded-full border border-cyan-500/30 px-3 py-1 font-mono">{ROLE}</span>
+          <span class="rounded-full border border-cyan-500/30 px-3 py-1 font-mono">{LOCATION}</span>
+          <span class="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 px-3 py-1 font-mono">
+            <span class="h-2 w-2 animate-pulse rounded-full bg-cyan-400"></span>
+            Clearance: {CLEARANCE}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    {/* Quick contacts */}
+    <nav class="mt-6 flex flex-wrap gap-2 text-sm text-cyan-200">
+      {CONTACTS.map((c) => (
+        <a
+          href={c.href}
+          class="rounded-lg border border-cyan-500/30 bg-slate-900/40 px-3 py-1.5 transition hover:bg-cyan-500/10"
+          target={c.href.startsWith("http") ? "_blank" : undefined}
+          rel={c.href.startsWith("http") ? "noopener" : undefined}
+        >
+          {c.label}
+        </a>
+      ))}
+    </nav>
+  </header>
+
+  {/* ---------- LOG ENTRIES (flavor) ---------- */}
+  <section class="mt-8 grid gap-6 md:grid-cols-3">
+    {LOG_ENTRIES.map((e) => (
+      <article class="rounded-2xl border border-cyan-500/10 bg-slate-950/40 p-5">
+        <p class="font-mono text-[11px] uppercase tracking-widest text-cyan-300/70">{e.stamp}</p>
+        <h2 class="mt-1 text-lg font-semibold text-cyan-100">{e.title}</h2>
+        <p class="mt-2 text-slate-300">{e.body}</p>
+      </article>
+    ))}
+  </section>
+
+  {/* ---------- SPECIALIZATION & STACK ---------- */}
+  <section class="mt-8 rounded-2xl border border-cyan-500/10 bg-slate-950/40 p-6 md:p-8">
+    <div class="grid gap-8 md:grid-cols-2">
+      <div>
+        <h2 class="font-mono text-sm uppercase tracking-widest text-cyan-300/80">Specialization</h2>
+        <p class="mt-2 text-lg text-cyan-100">{SPECIALIZATION}</p>
+        <p class="mt-2 text-slate-300">
+          I like building pipelines and tools that make analysis repeatable, explainable, and fast.
+          I optimize for clear boundaries, typed interfaces, and tests so projects grow without chaos.
+        </p>
+        <ul class="mt-4 list-disc space-y-1 pl-5 text-slate-300">
+          <li>Data ingestion → feature engineering → evaluation → reporting</li>
+          <li>Interactive dashboards with defensible metrics and context</li>
+          <li>Lightweight infra (SQLite → {`>`} Postgres) and Dockerized dev</li>
+        </ul>
+      </div>
+
+      <div>
+        <h2 class="font-mono text-sm uppercase tracking-widest text-cyan-300/80">Core Stack</h2>
+        <div class="mt-3 flex flex-wrap gap-2">
+          {CORE_STACK.map((t) => (
+            <span class="rounded-md border border-cyan-500/20 bg-slate-800/60 px-2.5 py-1 text-xs text-slate-200">{t}</span>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* ---------- INTERESTS & FUN ---------- */}
+  <section class="mt-8 grid gap-6 md:grid-cols-2">
+    <article class="rounded-2xl border border-cyan-500/10 bg-slate-950/40 p-6 md:p-8">
+      <h2 class="font-mono text-sm uppercase tracking-widest text-cyan-300/80">Research Interests</h2>
+      <ul class="mt-3 space-y-2 text-slate-300">
+        {INTERESTS.map((i) => <li class="flex items-start gap-2"><span class="mt-2 h-1.5 w-1.5 rounded-full bg-cyan-400"></span><span>{i}</span></li>)}
+      </ul>
+    </article>
+
+    <article class="rounded-2xl border border-cyan-500/10 bg-slate-950/40 p-6 md:p-8">
+      <h2 class="font-mono text-sm uppercase tracking-widest text-cyan-300/80">Human Bits • Fun Stuff</h2>
+      <ul class="mt-3 space-y-2 text-slate-300">
+        {FUN.map((f) => <li class="flex items-start gap-2"><span class="mt-2 h-1.5 w-1.5 rounded-full bg-cyan-400"></span><span>{f}</span></li>)}
+      </ul>
+    </article>
+  </section>
+
+  {/* ---------- NOW / NEXT ROADMAP ---------- */}
+  <section class="mt-8 rounded-2xl border border-cyan-500/10 bg-slate-950/40 p-6 md:p-8">
+    <h2 class="mb-4 font-mono text-sm uppercase tracking-widest text-cyan-300/80">Roadmap</h2>
+    <div class="grid gap-8 md:grid-cols-2">
+      <div>
+        <h3 class="text-cyan-100">Now</h3>
+        <ul class="mt-2 space-y-2 text-slate-300">
+          {NOW_NEXT.now.map((n) => <li class="flex items-start gap-2"><span class="mt-2 h-1.5 w-1.5 rounded-full bg-cyan-400"></span><span>{n}</span></li>)}
+        </ul>
+      </div>
+      <div>
+        <h3 class="text-cyan-100">Next</h3>
+        <ul class="mt-2 space-y-2 text-slate-300">
+          {NOW_NEXT.next.map((n) => <li class="flex items-start gap-2"><span class="mt-2 h-1.5 w-1.5 rounded-full bg-cyan-400"></span><span>{n}</span></li>)}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  {/* ---------- CALL TO ACTION ---------- */}
+  <section class="mt-8 rounded-2xl border border-cyan-500/20 bg-gradient-to-br from-slate-950/60 to-slate-900/50 p-6 md:p-8">
+    <div class="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
+      <div>
+        <h2 class="text-xl font-semibold text-cyan-100">Open to missions & collaboration</h2>
+        <p class="mt-1 text-slate-300">Have a problem worth modeling or a dataset to decode? Let’s design it.</p>
+      </div>
+      <div class="flex gap-2">
+        <a href="/contact" class="rounded-xl border border-cyan-500/40 bg-cyan-500/10 px-4 py-2 text-cyan-200 transition hover:bg-cyan-500/20">Contact</a>
+        <a href="/projects" class="rounded-xl border border-slate-600/50 bg-slate-800/60 px-4 py-2 text-slate-200 transition hover:bg-slate-800">View Projects</a>
+      </div>
+    </div>
+  </section>
+
+  {/* ---------- JSON-LD (structured data) ---------- */}
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Person",
+      name: NAME,
+      jobTitle: ROLE,
+      description: TAGLINE,
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: LOCATION,
+        addressCountry: "US"
+      },
+      sameAs: CONTACTS.filter(c => c.href.startsWith("http")).map(c => c.href)
+    })}
+  />
+
+  {/* ---------- Print Tweaks ---------- */}
+  <style is:global>
+    @media print {
+      .print\:hidden { display: none !important; }
+      a[href]:after { content: "" !important; }
+      body { background: white !important; }
+    }
+  </style>
+</Base>

@@ -1,0 +1,240 @@
+---
+/**
+ * src/components/ui/NeonCard.astro
+ * -----------------------------------------------------------------------------
+ * Sci-fi “neon” card with interactive glow, accent border, and flexible slots.
+ *
+ * FEATURES
+ * - Neon glow border using outline + drop-shadow (no heavy filters)
+ * - Clickable or static: pass `href` to make the whole card a link
+ * - Accessible: proper role/aria, focus ring, prefers-reduced-motion respect
+ * - Slots: default (body), header, footer, and actions
+ * - Variants: "outline" | "glass" | "solid"
+ * - Accents: customizable via CSS variables (e.g., --neon)
+ *
+ * USAGE
+ * -----
+ * <NeonCard accent="cyan" title="Mission Report" subtitle="Alpha-7 Node" icon="🛰" />
+ *
+ * <NeonCard variant="glass" accent="#7c3aed" href="/projects/engine"
+ *           title="Backtesting Engine" subtitle="Python • Pandas • Plotly">
+ *   <p>Modular pipeline for factor research, risk, and tearsheets.</p>
+ *   <div slot="actions">
+ *     <a class="btn btn-sm">Open</a>
+ *   </div>
+ *   <small slot="footer">Updated: 2025-09-30</small>
+ * </NeonCard>
+ *
+ * PROPS
+ * - title?: string            Header title text
+ * - subtitle?: string         Smaller secondary line
+ * - icon?: string             Optional emoji or short text symbol
+ * - href?: string             If present, wraps as <a> with link semantics
+ * - accent?: string           Tailwind color name OR any CSS color (#0ff, hsl(), etc.)
+ * - variant?: "outline" | "glass" | "solid"   Visual style (default "outline")
+ * - interactive?: boolean     Elevates hover/press effects (default true)
+ * - class?: string            Extra classes for the outer wrapper
+ * - id?: string               Optional id on the outer element
+ *
+ * SLOTS
+ * - (default)   Card body/content
+ * - header      Replace the entire header row (icon/title/subtitle)
+ * - actions     Right-side actions row (buttons/links)
+ * - footer      Footer area
+ *
+ * NOTES
+ * - To globally theme, set :root { --neon: <color>; --neon-strong: <color>; }
+ * - If both accent and global vars provided, component prefers `accent`.
+ * -----------------------------------------------------------------------------
+ */
+
+interface Props {
+  title?: string;
+  subtitle?: string;
+  icon?: string;
+  href?: string;
+  accent?: string;
+  variant?: "outline" | "glass" | "solid";
+  interactive?: boolean;
+  class?: string;
+  id?: string;
+}
+
+const {
+  title,
+  subtitle,
+  icon,
+  href,
+  accent,
+  variant = "outline",
+  interactive = true,
+  class: className = "",
+  id,
+} = Astro.props as Props;
+
+// Resolve accent to CSS variables; allow Tailwind color names or raw CSS colors.
+function resolveAccent(a?: string) {
+  // Basic map for common Tailwind hues -> neon-ish rgba
+  const map: Record<string, [string, string]> = {
+    cyan: ["rgba(56,189,248,0.75)", "rgb(34,211,238)"],
+    blue: ["rgba(59,130,246,0.70)", "rgb(96,165,250)"],
+    violet: ["rgba(139,92,246,0.70)", "rgb(167,139,250)"],
+    fuchsia: ["rgba(217,70,239,0.70)", "rgb(232,121,249)"],
+    emerald: ["rgba(16,185,129,0.70)", "rgb(52,211,153)"],
+    lime: ["rgba(132,204,22,0.70)", "rgb(190,242,100)"],
+    amber: ["rgba(245,158,11,0.70)", "rgb(251,191,36)"],
+    red: ["rgba(239,68,68,0.70)", "rgb(248,113,113)"],
+  };
+  if (!a) return null;
+  const key = a.toLowerCase().trim();
+  if (map[key]) return { neon: map[key][0], strong: map[key][1] };
+  // Fallback: use provided color for both
+  return { neon: a, strong: a };
+}
+
+const accentVars = resolveAccent(accent);
+const baseAttrs = {
+  id,
+  class: `group relative overflow-hidden rounded-2xl border transition-all ${
+    interactive ? "motion-safe:will-change-transform" : ""
+  } ${className}`.trim(),
+  style: `
+    ${accentVars ? `--neon:${accentVars.neon};--neon-strong:${accentVars.strong};` : ""}
+  `.trim(),
+  "data-variant": variant,
+};
+
+const wrapperTag = href ? "a" : "div";
+const role = href ? undefined : "article";
+const ariaLabel = href && title ? title : undefined;
+
+// Variant class bundles
+const variantClasses =
+  variant === "glass"
+    ? "border-white/10 bg-zinc-950/40 backdrop-blur-md"
+    : variant === "solid"
+    ? "border-zinc-800 bg-zinc-900/90"
+    : // outline
+      "border-zinc-800 bg-zinc-950";
+
+// Padding/layout
+const padding = "p-5 sm:p-6";
+const headerGrid = "flex items-start gap-3";
+const titleCls =
+  "text-base sm:text-lg font-semibold tracking-tight text-zinc-200 group-hover:text-[--neon-strong]";
+const subtitleCls = "text-xs sm:text-sm text-zinc-400";
+const bodyCls = "prose prose-invert prose-sm max-w-none text-zinc-300";
+const footerCls = "text-[11px] sm:text-xs text-zinc-400";
+const actionsCls =
+  "flex gap-2 shrink-0 *:rounded-lg *:px-3 *:py-1.5 *:text-xs *:border *:border-zinc-700 hover:*:border-[--neon-strong]";
+---
+
+<style>
+  /* ----------------------------------------------------------------------------
+   * Neon theming via CSS variables
+   * ---------------------------------------------------------------------------- */
+  :global(:root) {
+    --neon: rgba(56, 189, 248, 0.75);       /* default cyan glow */
+    --neon-strong: rgb(125, 211, 252);       /* brighter text on active */
+  }
+
+  /* Outer glow ring and hover elevation */
+  .neon-card {
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.02) inset,
+      0 0 0 0 var(--neon),
+      0 0 0 0 color-mix(in oklab, var(--neon) 60%, transparent);
+    transition: box-shadow 180ms ease, transform 180ms ease, border-color 180ms ease;
+  }
+
+  .neon-card[data-variant="outline"] {
+    border-color: color-mix(in oklab, var(--neon) 18%, rgb(39,39,42));
+  }
+
+  .neon-card[data-variant="glass"] {
+    border-color: color-mix(in oklab, var(--neon) 22%, rgba(255,255,255,0.08));
+  }
+
+  .neon-card[data-variant="solid"] {
+    border-color: color-mix(in oklab, var(--neon) 16%, rgb(39,39,42));
+  }
+
+  .neon-card:is(:hover, :focus-visible).interactive {
+    transform: translateY(-2px);
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--neon) 45%, rgba(255,255,255,0.06)) inset,
+      0 0 18px -2px var(--neon),
+      0 0 42px -6px color-mix(in oklab, var(--neon) 70%, transparent);
+  }
+
+  /* Focus ring for keyboard nav */
+  .neon-focus:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px color-mix(in oklab, var(--neon) 55%, white),
+      0 0 24px var(--neon);
+  }
+
+  /* Divider line */
+  .neon-divider {
+    height: 1px;
+    background:
+      linear-gradient(90deg,
+        transparent 0%,
+        color-mix(in oklab, var(--neon) 40%, transparent) 15%,
+        color-mix(in oklab, var(--neon) 60%, transparent) 50%,
+        color-mix(in oklab, var(--neon) 40%, transparent) 85%,
+        transparent 100%);
+    opacity: .6;
+  }
+
+  /* Reduce motion where requested */
+  @media (prefers-reduced-motion: reduce) {
+    .neon-card {
+      transition: none;
+    }
+  }
+</style>
+
+<component
+  is={wrapperTag}
+  {...baseAttrs}
+  class={`neon-card ${variantClasses} ${baseAttrs.class} ${interactive ? "interactive" : ""} ${href ? "neon-focus" : ""}`}
+  role={role}
+  href={href}
+  aria-label={ariaLabel}
+>
+  <div class={`${padding} grid gap-4`}>
+    <!-- Header -->
+    <slot name="header">
+      <div class={`${headerGrid}`}>
+        {icon ? (
+          <span
+            aria-hidden="true"
+            class="inline-grid size-9 place-items-center rounded-xl border border-zinc-800/70 bg-zinc-900/60 text-lg shadow-[0_0_20px_var(--neon)]"
+          >
+            {icon}
+          </span>
+        ) : null}
+        <div class="min-w-0 flex-1">
+          {title ? <h3 class={`${titleCls}`}>{title}</h3> : null}
+          {subtitle ? <p class={`${subtitleCls}`}>{subtitle}</p> : null}
+        </div>
+        <div class={`${actionsCls}`}>
+          <slot name="actions" />
+        </div>
+      </div>
+    </slot>
+
+    <!-- Divider if header exists OR actions provided -->
+    {(title || subtitle || icon) ? <div class="neon-divider"></div> : null}
+
+    <!-- Body -->
+    <div class={`${bodyCls}`}>
+      <slot />
+    </div>
+
+    <!-- Footer -->
+    <slot name="footer" />
+  </div>
+</component>

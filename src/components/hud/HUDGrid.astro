@@ -1,0 +1,258 @@
+---
+/**
+ * src/components/hud/HUDGrid.astro
+ * -----------------------------------------------------------------------------
+ * Sci-fi "HUD" responsive grid for dashboards: panels, charts, readouts.
+ *
+ * FEATURES
+ * - Pure CSS Grid with CSS variables (no framework deps)
+ * - Two layout modes:
+ *     1) Fixed columns: grid-template-columns: repeat(cols, 1fr)
+ *     2) Auto-fit:     repeat(auto-fit, minmax(minWidth, 1fr))
+ * - Dense packing option for compact dashboards
+ * - Child spans via data attributes: data-col-span / data-row-span
+ * - Optional equal heights (row auto-size) or natural heights
+ * - Debug mode draws faint gridlines (HUD vibe)
+ * - Graceful accessibility defaults and keyboard focus ring
+ *
+ * USAGE
+ * -----
+ * <HUDGrid cols={12} rowHeight="auto" gap="1rem">
+ *   <div class="hud-tile" data-col-span="4" data-row-span="2">
+ *     <!-- chart -->
+ *   </div>
+ *   <div class="hud-tile" data-col-span="3">
+ *     <!-- metric -->
+ *   </div>
+ * </HUDGrid>
+ *
+ * Or auto-fit columns based on a min tile width:
+ * <HUDGrid minWidth="260px" gap="16px" dense debug>
+ *   <div class="hud-tile">A</div>
+ *   <div class="hud-tile" data-col-span="2">B wide</div>
+ *   <div class="hud-tile" data-row-span="2">C tall</div>
+ * </HUDGrid>
+ *
+ * PROPS
+ * - cols?: number            Fixed number of columns (default 12 if neither cols nor minWidth provided)
+ * - minWidth?: string        Activates auto-fit mode (e.g., "240px", "18rem")
+ * - gap?: string             Gap between tiles (CSS length, default "16px")
+ * - dense?: boolean          Use grid-auto-flow: dense (default false)
+ * - rowHeight?: "auto" | string  Row sizing; "auto" or CSS length (e.g., "160px") (default "auto")
+ * - equalHeights?: boolean   If true with fixed rowHeight, children can span rows precisely (default false)
+ * - debug?: boolean          Draw HUD gridlines (default false)
+ * - class?: string           Extra classes on the grid wrapper
+ * - ariaLabel?: string       Label for assistive tech (default "Heads-up display grid")
+ *
+ * CHILD (slot) API
+ * - Add class "hud-tile" to an immediate child or rely on auto-upgrade script.
+ * - Use data-col-span / data-row-span numeric attributes to span across grid.
+ * - The component sets CSS variables on children: --col-span, --row-span.
+ *
+ * NOTES
+ * - rowHeight !== "auto" + equalHeights=true enables masonry-like alignment via
+ *   row tracks; tune rowHeight to your baseline (e.g., "140px").
+ * - For Tailwind projects, you can still apply utilities to tiles; this component
+ *   handles only the grid math and spans.
+ * -----------------------------------------------------------------------------
+ */
+
+interface Props {
+  cols?: number;
+  minWidth?: string;
+  gap?: string;
+  dense?: boolean;
+  rowHeight?: "auto" | string;
+  equalHeights?: boolean;
+  debug?: boolean;
+  class?: string;
+  ariaLabel?: string;
+}
+
+const {
+  cols,
+  minWidth,
+  gap = "16px",
+  dense = false,
+  rowHeight = "auto",
+  equalHeights = false,
+  debug = false,
+  class: className = "",
+  ariaLabel = "Heads-up display grid",
+} = Astro.props as Props;
+
+// Internal flags
+const fixedCols = !!cols || !minWidth;
+const resolvedCols = cols ?? 12;
+const useFixedRow = rowHeight !== "auto";
+
+// Inline style variables for the grid container
+const gridVars =
+  fixedCols
+    ? `--hud-cols:${resolvedCols};--hud-gap:${gap};--hud-row:${rowHeight};`
+    : `--hud-min:${minWidth};--hud-gap:${gap};--hud-row:${rowHeight};`;
+---
+
+<style>
+  /* ----------------------------------------------------------------------------
+   * Grid container
+   * ---------------------------------------------------------------------------- */
+  .hud-grid {
+    display: grid;
+    gap: var(--hud-gap, 16px);
+    align-items: start;
+    /* debug background added conditionally via [data-debug="true"] */
+    position: relative;
+  }
+
+  /* Fixed columns vs auto-fit */
+  .hud-grid[data-mode="fixed"] {
+    grid-template-columns: repeat(var(--hud-cols, 12), minmax(0, 1fr));
+  }
+  .hud-grid[data-mode="autofit"] {
+    grid-template-columns: repeat(auto-fit, minmax(var(--hud-min, 240px), 1fr));
+  }
+
+  /* Row sizing; when a fixed track height is used, tiles can span rows precisely */
+  .hud-grid[data-row="auto"] {
+    grid-auto-rows: auto;
+  }
+  .hud-grid[data-row="fixed"] {
+    grid-auto-rows: var(--hud-row, 140px);
+  }
+
+  /* Dense packing option (fills holes) */
+  .hud-grid[data-dense="true"] {
+    grid-auto-flow: dense;
+  }
+
+  /* ----------------------------------------------------------------------------
+   * Tiles (direct children). You can add your own visual styles; we only handle
+   * grid math and a focus outline for keyboard nav.
+   * ---------------------------------------------------------------------------- */
+  .hud-grid > .hud-tile {
+    /* Default spans: 1x1; can be overridden by data attributes / CSS vars */
+    --col-span: 1;
+    --row-span: 1;
+    grid-column: span var(--col-span);
+    grid-row: span var(--row-span);
+    min-width: 0; /* allow inner content to shrink */
+  }
+
+  /* Respect prefers-reduced-motion by keeping transitions minimal here */
+  @media (prefers-reduced-motion: no-preference) {
+    .hud-grid > .hud-tile {
+      transition: transform 150ms ease, box-shadow 150ms ease;
+    }
+    .hud-grid > .hud-tile:hover {
+      transform: translateY(-1px);
+    }
+  }
+
+  /* Keyboard focus helper (applied when element is focusable) */
+  .hud-focus:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px color-mix(in oklab, rgb(56 189 248) 60%, white),
+      0 0 20px rgba(56, 189, 248, 0.5);
+    border-radius: 12px;
+  }
+
+  /* ----------------------------------------------------------------------------
+   * HUD debug gridlines
+   * ---------------------------------------------------------------------------- */
+  .hud-grid[data-debug="true"]::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(
+        to right,
+        color-mix(in oklab, rgba(125,125,125,0.15) 60%, transparent) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        to bottom,
+        color-mix(in oklab, rgba(125,125,125,0.12) 60%, transparent) 1px,
+        transparent 1px
+      );
+    background-size:
+      calc((100% - (var(--hud-gap, 16px) * (var(--hud-cols, 12) - 1))) / var(--hud-cols, 12)) var(--hud-row, 140px),
+      calc((100% - (var(--hud-gap, 16px) * (var(--hud-cols, 12) - 1))) / var(--hud-cols, 12)) var(--hud-row, 140px);
+    opacity: 0.35;
+    mask-image: radial-gradient(120% 120% at 50% 50%, #000 60%, transparent 100%);
+  }
+
+  /* For auto-fit mode, approximate column width for debug overlay */
+  .hud-grid[data-debug="true"][data-mode="autofit"]::before {
+    background-size:
+      var(--hud-min, 240px) var(--hud-row, 140px),
+      var(--hud-min, 240px) var(--hud-row, 140px);
+  }
+</style>
+
+<div
+  class={`hud-grid ${className}`}
+  role="grid"
+  aria-label={ariaLabel}
+  data-mode={fixedCols ? "fixed" : "autofit"}
+  data-row={useFixedRow ? "fixed" : "auto"}
+  data-dense={String(dense)}
+  data-debug={String(debug)}
+  style={gridVars}
+>
+  <slot />
+</div>
+
+<script is:raw>
+  /**
+   * Auto-upgrade immediate children:
+   * - Ensure each tile has .hud-tile class
+   * - Read data-col-span / data-row-span and reflect to CSS variables
+   * - Make tiles focusable (tabindex="0") if they are not naturally focusable
+   */
+  (() => {
+    const grid = document.currentScript?.previousElementSibling;
+    if (!grid) return;
+
+    const applyToChild = (el) => {
+      if (!(el instanceof HTMLElement)) return;
+      // Only upgrade direct children
+      if (el.parentElement !== grid) return;
+
+      el.classList.add('hud-tile');
+
+      // Reflect spans
+      const c = Number(el.getAttribute('data-col-span') || '1');
+      const r = Number(el.getAttribute('data-row-span') || '1');
+      if (Number.isFinite(c) && c > 0) el.style.setProperty('--col-span', String(c));
+      if (Number.isFinite(r) && r > 0) el.style.setProperty('--row-span', String(r));
+
+      // Focusability for keyboard outline (skip anchors, buttons, inputs)
+      const focusableRoles = /^(A|BUTTON|INPUT|SELECT|TEXTAREA)$/;
+      if (!focusableRoles.test(el.tagName) && !el.hasAttribute('tabindex')) {
+        el.setAttribute('tabindex', '0');
+        el.classList.add('hud-focus');
+      }
+    };
+
+    // Initial pass
+    Array.from(grid.children).forEach(applyToChild);
+
+    // Observe for dynamic inserts
+    const mo = new MutationObserver((muts) => {
+      for (const m of muts) {
+        m.addedNodes?.forEach(applyToChild);
+        // If attributes change on spans, re-apply
+        if (m.type === 'attributes' && m.target instanceof HTMLElement) {
+          if (m.attributeName === 'data-col-span' || m.attributeName === 'data-row-span') {
+            applyToChild(m.target);
+          }
+        }
+      }
+    });
+
+    mo.observe(grid, { childList: true, subtree: false, attributes: true, attributeFilter: ['data-col-span', 'data-row-span'] });
+  })();
+</script>

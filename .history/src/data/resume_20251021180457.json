@@ -1,0 +1,123 @@
+{
+  "basics": {
+    "name": "Zeshan Basaran",
+    "title": "Data Analyst / Software Engineer",
+    "tagline": "I analyze data, engineer software, and build intelligent systems.",
+    "location": "Baltimore, MD",
+    "email": "zeshan.basaran@gmail.com",
+    "github": "https://github.com/zeshanbasaran",
+    "linkedin": "https://linkedin.com/in/zeshanbasaran"
+  },
+
+  "skills": {
+    "languages": ["Python", "Java", "Kotlin", "SQL", "JavaScript", "TypeScript", "LaTeX"],
+    "frameworks": ["Astro", "React", "TailwindCSS", "Node.js", "Streamlit", "Dash", "Tableau"],
+    "tools": ["Git/GitHub", "Docker", "Firebase", "MySQL", "PostgreSQL", "SQLite", "Jupyter"],
+    "concepts": ["Machine Learning", "Data Visualization", "Natural Language Processing", "Quantitative Finance", "Simulation Modeling"]
+  },
+
+  "experience": [
+    {
+      "company": "City of Baltimore",
+      "role": "Incident and Problem Management Intern",
+      "period": "2023",
+      "details": [
+        "Assisted IT operations team in managing incident reports and root cause analysis.",
+        "Documented issue trends to improve long-term system reliability.",
+        "Learned large-scale IT service management processes in a municipal context."
+      ]
+    },
+    {
+      "company": "Carroll County Public Library",
+      "role": "Coding Workshop Mentor",
+      "period": "2023",
+      "details": [
+        "Guided middle and high school students in programming basics.",
+        "Fostered a positive and inclusive learning environment.",
+        "Encouraged problem-solving skills through hands-on projects."
+      ]
+    },
+    {
+      "company": "Cypriana & Olive Garden",
+      "role": "Bartender / Server",
+      "period": "2022 – 2024",
+      "details": [
+        "Worked in fast-paced hospitality environments balancing customer service and multitasking.",
+        "Demonstrated strong teamwork and communication skills."
+      ]
+    }
+  ],
+
+  "education": [
+    {
+      "institution": "Towson University",
+      "degree": "B.S. Computer Science (Software Engineering Track)",
+      "period": "2021 – 2025",
+      "gpa": "3.6",
+      "achievements": [
+        "Dean’s List",
+        "Director of Fundraising, National Student Data Corp (TU Chapter)"
+      ]
+    }
+  ],
+
+  "projects": [
+    {
+      "name": "Translator: Morse ↔ Binary ↔ English",
+      "link": "https://github.com/zeshanbasaran/Translator_Morse-Binary-English",
+      "description": "Java project using abstract classes and polymorphism to translate between multiple code systems."
+    },
+    {
+      "name": "Movie Sentiment Analysis",
+      "link": "https://github.com/zeshanbasaran/movieSentimentAnalysis",
+      "description": "Python NLP project analyzing IMDB reviews using scikit-learn classifiers."
+    },
+    {
+      "name": "Sensor Data Analysis",
+      "link": "https://github.com/zeshanbasaran/SensorDataAnalysis",
+      "description": "Python program analyzing glutamate sensor data for the Allen Institute."
+    },
+    {
+      "name": "Quantitative Factor Analytics Platform",
+      "link": "https://github.com/zeshanbasaran",
+      "description": "Multi-factor stock analytics pipeline with ETL scripts, factor models, and Dash dashboards."
+    },
+    {
+      "name": "Systematic Trading Backtester",
+      "link": "https://github.com/zeshanbasaran",
+      "description": "Python engine for backtesting SMA/Bollinger strategies with SQLite/MySQL/Postgres integration."
+    }
+  ],
+
+  "certifications": [
+    {
+      "title": "Data Analytics Competition (TU)",
+      "issuer": "Towson University",
+      "year": 2024,
+      "details": "Presented 10-minute analysis on DAP marketing data."
+    }
+  ],
+
+  "timeline": [
+    {
+      "year": "2021",
+      "event": "Enrolled at Towson University, Computer Science major."
+    },
+    {
+      "year": "2023",
+      "event": "Internship at City of Baltimore, Incident/Problem Management."
+    },
+    {
+      "year": "2023",
+      "event": "Mentored at Carroll County Public Library coding workshop."
+    },
+    {
+      "year": "2024",
+      "event": "TU Data Analytics Competition presentation."
+    },
+    {
+      "year": "2025",
+      "event": "Graduated Towson University, B.S. Computer Science."
+    }
+  ]
+}

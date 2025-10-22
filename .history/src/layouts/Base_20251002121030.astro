@@ -1,0 +1,35 @@
+---
+import "../styles/global.css";
+const { title = "Zeshan Basaran", description = "Analyzing patterns, engineering solutions, shaping the future." } = Astro.props;
+---
+<html lang="en" class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+  </head>
+  <body class="bg-slate-950 text-slate-100">
+    <header class="navbar">
+      <div class="navbar-inner container mx-auto px-4 md:px-8">
+        <a href="/" class="font-display text-lg tracking-wide text-white">Zeshan Basaran</a>
+        <nav class="nav-links">
+          <a class="nav-link" href="/">Home</a>
+          <a class="nav-link" href="/projects">Projects</a>
+          <a class="nav-link" href="/resume">Resume</a>
+          <a class="nav-link" href="/about">About</a>
+          <a class="nav-link" href="/contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    {/* Main content area with margins */}
+    <main class="container mx-auto px-4 md:px-8 py-8">
+      <slot />
+    </main>
+
+    <footer class="section text-center text-sm text-white/60 container mx-auto px-4 md:px-8 py-6">
+      © {new Date().getFullYear()} Zeshan Basaran
+    </footer>
+  </body>
+</html>

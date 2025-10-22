@@ -1,0 +1,57 @@
+---
+import Base from "../layouts/Base.astro";
+---
+
+<Base title="Home • Zeshan Basaran">
+  <section class="hero">
+    <div class="hero-kicker">
+      <span class="badge-dot"></span>
+      ACCESS GRANTED
+    </div>
+    <h1 class="hero-title">I analyze data, engineer software, and build intelligent systems.</h1>
+    <p class="hero-sub">
+      Blending data science, machine learning, and software development to craft solutions that scale.
+    </p>
+
+    <div class="mt-6 flex items-center justify-center gap-3">
+      <a href="/projects" class="btn-neon">Browse Projects</a>
+      <a href="/resume" class="pill"><span class="pill-dot"></span> View Resume</a>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="mb-2">Projects Hub</h2>
+
+    <div class="grid-projects">
+      <a href="/projects/data-01" class="card">
+        <h3>Factor Analytics Dashboard</h3>
+        <p class="muted mt-2">Multi-factor ranks, portfolio sleeves, and performance tearsheets.</p>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <span class="pill"><span class="pill-dot"></span> Data Analysis</span>
+          <span class="pill">Plotly</span>
+          <span class="pill">Pandas</span>
+        </div>
+      </a>
+
+      <a href="/projects/ml-01" class="card">
+        <h3>Movie Sentiment Classifier</h3>
+        <p class="muted mt-2">Scikit-learn pipeline, feature grid search, and evaluation reports.</p>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <span class="pill"><span class="pill-dot"></span> Machine Learning</span>
+          <span class="pill">scikit-learn</span>
+          <span class="pill">NLP</span>
+        </div>
+      </a>
+
+      <a href="/projects/se-01" class="card">
+        <h3>Systematic Backtester</h3>
+        <p class="muted mt-2">SMA/Bollinger strategies, risk metrics, and Streamlit monitoring.</p>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <span class="pill"><span class="pill-dot"></span> Software Engineering</span>
+          <span class="pill">Streamlit</span>
+          <span class="pill">SQLite</span>
+        </div>
+      </a>
+    </div>
+  </section>
+</Base>

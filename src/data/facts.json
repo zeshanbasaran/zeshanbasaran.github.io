@@ -1,0 +1,81 @@
+{
+  "facts": [
+    {
+      "id": "astro-islands",
+      "text": "Astro ships zero JS by default to each page—hydrate components as islands only when needed.",
+      "tags": ["astro", "performance", "portfolio"],
+      "weight": 2,
+      "url": "https://docs.astro.build/en/concepts/islands/"
+    },
+    {
+      "id": "tailwind-jit",
+      "text": "Tailwind’s JIT compiles only the classes you use, keeping CSS payloads tiny.",
+      "tags": ["tailwind", "performance"]
+    },
+    {
+      "id": "plotly-webgl",
+      "text": "Plotly can switch to WebGL for large scatter traces—great for high‑density data.",
+      "tags": ["plotly", "data"]
+    },
+    {
+      "id": "streamlit-components",
+      "text": "Streamlit supports custom components, so you can extend dashboards with React widgets.",
+      "tags": ["streamlit", "software"]
+    },
+    {
+      "id": "sql-index-tip",
+      "text": "Covering indexes speed up SELECTs when all needed columns are in the index itself.",
+      "tags": ["sql", "data"]
+    },
+    {
+      "id": "ml-leakage",
+      "text": "Data leakage often hides in feature engineering. Always split before transforming.",
+      "tags": ["ml", "data"]
+    },
+    {
+      "id": "sci-fi-holo",
+      "text": "Holographic UI trick: high contrast neon borders + subtle blur + noise = futuristic vibe.",
+      "tags": ["sci-fi", "portfolio"]
+    },
+    {
+      "id": "bigO-note",
+      "text": "An O(n log n) algorithm can win in practice if constants are small and cache‑friendly.",
+      "tags": ["software"]
+    },
+    {
+      "id": "git-conventional",
+      "text": "Conventional commits (+ semantic versioning) make changelogs and releases effortless.",
+      "tags": ["software", "portfolio"]
+    },
+    {
+      "id": "risk-drawdown",
+      "text": "Max drawdown shows worst peak‑to‑trough loss—vital for strategy risk profiles.",
+      "tags": ["data", "ml"]
+    },
+    {
+      "id": "http-preconnect",
+      "text": "Use <link rel=\"preconnect\"> for third‑party origins (fonts, APIs) to cut handshake time.",
+      "tags": ["performance", "portfolio"]
+    },
+    {
+      "id": "a11y-prefers-reduced-motion",
+      "text": "Respect prefers‑reduced‑motion: reduce parallax, long fades, and continuous animations.",
+      "tags": ["portfolio", "software"]
+    },
+    {
+      "id": "seed-rng",
+      "text": "Seeded PRNGs yield reproducible dashboards—great for demos and snapshot tests.",
+      "tags": ["software", "plotly"]
+    },
+    {
+      "id": "sci-fi-clearance",
+      "text": "Clearance Level: Data Analyst/Computer Scientist — access to mission logs granted.",
+      "tags": ["sci-fi", "portfolio"]
+    },
+    {
+      "id": "dash-islands",
+      "text": "Embed dashboards as ‘islands’ to keep static pages blazing fast.",
+      "tags": ["astro", "performance", "plotly"]
+    }
+  ]
+}

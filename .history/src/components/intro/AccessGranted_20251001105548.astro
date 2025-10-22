@@ -1,0 +1,207 @@
+---
+/**
+ * =============================================================================
+ * File: src/components/intro/AccessGranted.astro
+ * Author: (Your Name)
+ * Project: Sci-Fi Portfolio Website — Zeshan Basaran
+ *
+ * Component:
+ *   AccessGranted — a reusable, terminal-style intro overlay that flashes
+ *   “ACCESS GRANTED” with a loading bar, then auto-dismisses or can be
+ *   skipped by the user (click / keydown). Respects reduced motion.
+ *
+ * Props:
+ *   - name?: string
+ *       Display name to greet (default: "Operator").
+ *
+ *   - autoDismissMs?: number
+ *       Milliseconds before the overlay auto-dismisses. Set to 0 to disable
+ *       auto-dismiss (user must click/press a key). Default: 1800.
+ *
+ *   - initialOpen?: boolean
+ *       Whether the gate starts visible. Default: true.
+ *
+ *   - rememberKey?: string
+ *       If provided, the component will store a flag in localStorage to skip
+ *       the intro on future visits (until cleared). Example: "skipIntro".
+ *       When set, a small checkbox is shown to let the user opt out.
+ *
+ *   - class?: string
+ *       Extra classes for the outermost section wrapper.
+ *
+ * Events (dispatched on `window`):
+ *   - "accessgranted:dismiss" — fired when the overlay hides.
+ *
+ * Usage:
+ *   ---
+ *   import AccessGranted from "@/components/intro/AccessGranted.astro";
+ *   ---
+ *   <AccessGranted name="Zeshan" rememberKey="skipIntro" />
+ *
+ * Notes:
+ *   - This component is intentionally client-light. No frameworks required.
+ *   - You can style globally via Tailwind. The background layers are purely
+ *     decorative and marked `aria-hidden="true"`.
+ * =============================================================================
+ */
+
+export interface Props {
+  name?: string;
+  autoDismissMs?: number;
+  initialOpen?: boolean;
+  rememberKey?: string;
+  class?: string;
+}
+
+const {
+  name = "Operator",
+  autoDismissMs = 1800,
+  initialOpen = true,
+  rememberKey = "",
+  class: className = "",
+} = Astro.props;
+
+// A unique id to avoid collisions if multiple gates exist
+const elId = `access-gate-${Math.random().toString(36).slice(2, 9)}`;
+---
+
+<section
+  id={elId}
+  class={`fixed inset-0 z-50 grid place-items-center transition-opacity duration-300 ${className}`.trim()}
+  data-open={String(initialOpen)}
+  aria-hidden={initialOpen ? "false" : "true"}
+>
+  <!-- ======= Backdrop / Scanlines / Glow ======= -->
+  <div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10">
+    <div class="absolute inset-0 bg-black/90"></div>
+    <div
+      class="absolute inset-0 opacity-[0.06] mix-blend-soft-light"
+      style="
+        background-image: linear-gradient(rgba(255,255,255,0.6) 1px, transparent 1px);
+        background-size: 100% 3px;
+      "
+    ></div>
+    <div class="absolute -top-20 left-1/2 h-[42rem] w-[42rem] -translate-x-1/2 rounded-full bg-emerald-400/15 blur-3xl"></div>
+  </div>
+
+  <!-- ======= Panel ======= -->
+  <div
+    class="mx-6 w-full max-w-2xl rounded-2xl border border-emerald-400/30 bg-black/40 p-6 shadow-lg ring-1 ring-emerald-400/20 backdrop-blur"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby={`${elId}-title`}
+    aria-describedby={`${elId}-desc`}
+  >
+    <div class="font-mono text-sm leading-6 text-emerald-200/90">
+      <p class="opacity-70">> INIT SYS: /usr/local/zb-terminal… OK</p>
+      <p class="opacity-70">> LOADING SECURE MODULES… OK</p>
+      <p class="opacity-70">> VERIFYING CREDENTIALS… OK</p>
+
+      <!-- Progress bar -->
+      <div class="mt-4 h-[2px] w-full overflow-hidden rounded bg-emerald-400/20">
+        <div
+          class="h-full w-0 bg-emerald-400/70"
+          style="animation: loadbar 1.6s ease-out forwards"
+        ></div>
+      </div>
+
+      <!-- Headline -->
+      <p id={`${elId}-title`} class="mt-5 text-lg font-semibold tracking-widest text-emerald-300">
+        <span
+          class="border-b border-emerald-300/40 pb-1 after:ml-1 after:inline-block after:content-['▍']"
+          style="animation: caretBlink 1s steps(1) infinite"
+        >
+          ACCESS GRANTED
+        </span>
+      </p>
+
+      <!-- Subtext -->
+      <p id={`${elId}-desc`} class="mt-2 text-emerald-300/80">
+        Welcome, <span class="font-semibold text-emerald-200">{name}</span>. Redirecting to main interface…
+      </p>
+
+      <!-- Opt-out (remember) -->
+      {
+        rememberKey && (
+          <label class="mt-4 inline-flex select-none items-center gap-2 text-xs text-emerald-200/75">
+            <input
+              id={`${elId}-remember`}
+              type="checkbox"
+              class="h-3 w-3 accent-emerald-400"
+            />
+            Skip this intro next time
+          </label>
+        )
+      }
+
+      <!-- Hints -->
+      <div class="mt-3 text-[11px] text-emerald-200/60">
+        <span>Press any key or click to continue.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======= Animations & Reduced-Motion Guard ======= -->
+  <style is:global>
+    @keyframes loadbar { to { width: 100% } }
+    @keyframes caretBlink { 50% { opacity: .25 } }
+    @media (prefers-reduced-motion: reduce) {
+      #{elId} * { animation: none !important; transition: none !important; }
+    }
+    /* Hide logic via [data-open] to minimize JS DOM writes */
+    #{elId}[data-open="false"] { opacity: 0; pointer-events: none; }
+  </style>
+
+  <!-- ======= Dismiss / Remember Logic ======= -->
+  <script is:inline>
+    (function () {
+      const root = document.getElementById({JSON.stringify(elId)});
+      if (!root) return;
+
+      const hasRM = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const rememberKey = {JSON.stringify(rememberKey)};
+      const autoMs = Number({JSON.stringify(autoDismissMs)});
+      const rememberEl = document.getElementById({JSON.stringify(elId)} + '-remember');
+
+      // If remember flag set previously, start closed and bail early
+      try {
+        if (rememberKey && localStorage.getItem(rememberKey) === '1') {
+          root.dataset.open = "false";
+          root.setAttribute('aria-hidden', 'true');
+          return;
+        }
+      } catch (e) {}
+
+      // Dismiss helper
+      const dismiss = () => {
+        if (root.dataset.open === "false") return;
+        root.dataset.open = "false";
+        root.setAttribute('aria-hidden', 'true');
+
+        // Persist "remember" choice
+        try {
+          if (rememberKey && rememberEl && rememberEl instanceof HTMLInputElement && rememberEl.checked) {
+            localStorage.setItem(rememberKey, '1');
+          }
+        } catch (e) {}
+
+        // Fire a global event in case the page wants to react
+        try {
+          window.dispatchEvent(new CustomEvent('accessgranted:dismiss', { detail: { id: {JSON.stringify(elId)} } }));
+        } catch (e) {}
+      };
+
+      // Auto dismiss (unless disabled or reduced motion prefers less animation timing)
+      let timerId = null;
+      if (autoMs > 0) {
+        const ms = hasRM ? Math.min(600, autoMs) : autoMs;
+        timerId = window.setTimeout(dismiss, ms);
+      }
+
+      // Allow manual skip
+      const onUser = () => { if (timerId) clearTimeout(timerId); dismiss(); };
+      window.addEventListener('click', onUser, { once: true });
+      window.addEventListener('keydown', onUser, { once: true });
+    })();
+  </script>
+</section>

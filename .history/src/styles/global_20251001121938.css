@@ -1,0 +1,140 @@
+/* ---- Tailwind base ---- */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---- Fonts (Google) ----
+   If you prefer, load these in <head>, but @import here is fine. */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Orbitron:wght@500;700&display=swap');
+
+/* ---- CSS Variables for theme accents ---- */
+:root {
+  --bg: #0a0b0f;
+  --panel: #0f1117;
+  --text: #dde1e7;
+  --muted: #9aa4b2;
+  --neon: #00f0ff;
+  --border: #1b1f2a;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply font-sans text-[15px] leading-7;
+  background:
+    radial-gradient(1200px 800px at 70% -10%, rgba(0,240,255,0.12), transparent),
+    radial-gradient(800px 600px at -10% 30%, rgba(0,240,255,0.08), transparent),
+    var(--bg);
+  color: var(--text);
+}
+
+/* Subtle grid overlay for sci-fi vibe (optional, can toggle off) */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 24px 24px, 24px 24px;
+  mask-image: radial-gradient(transparent 0, black 60%);
+}
+
+/* Global spacing rhythm */
+.container-site {
+  @apply max-w-content mx-auto px-5 md:px-8;
+}
+
+/* Headings */
+h1, h2, h3 {
+  @apply font-display tracking-wide;
+}
+h1 { @apply text-3xl md:text-5xl font-bold; }
+h2 { @apply text-2xl md:text-3xl font-semibold; }
+h3 { @apply text-xl md:text-2xl font-semibold; }
+
+/* Links */
+a {
+  color: var(--neon);
+  text-decoration: none;
+  transition: color .2s ease, text-shadow .2s ease;
+}
+a:hover { text-shadow: 0 0 8px var(--neon); }
+
+/* Navbar */
+.navbar {
+  @apply sticky top-0 z-40 backdrop-blur;
+  background: linear-gradient(to bottom, rgba(10,11,15,0.85), rgba(10,11,15,0.35));
+  border-bottom: 1px solid var(--border);
+}
+.navbar-inner {
+  @apply container-site flex items-center justify-between py-3;
+}
+.nav-links {
+  @apply flex gap-4 md:gap-6 text-sm;
+}
+.nav-link {
+  @apply text-[0.95rem] font-semibold text-white/90 hover:text-white;
+}
+
+/* Hero / “Access Granted” */
+.hero {
+  @apply container-site text-center pt-12 md:pt-20 pb-8 md:pb-14;
+}
+.hero-kicker {
+  @apply inline-flex items-center gap-2 text-xs uppercase tracking-widest text-[color:var(--muted)];
+}
+.badge-dot {
+  width: 8px; height: 8px; border-radius: 9999px; background: var(--neon);
+  box-shadow: 0 0 10px var(--neon);
+}
+.hero-title {
+  @apply mt-4 md:mt-6;
+  color: var(--neon);
+  text-shadow: 0 0 16px rgba(0,240,255,0.6);
+}
+.hero-sub {
+  @apply mt-4 max-w-3xl mx-auto text-base md:text-lg text-[color:var(--muted)];
+}
+
+/* Section wrapper */
+.section {
+  @apply container-site py-10 md:py-14;
+}
+
+/* Cards */
+.card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border: 1px solid var(--border);
+  @apply rounded-xl p-5 md:p-6 transition-transform shadow-none;
+}
+.card:hover { transform: translateY(-4px); box-shadow: var(--neon) 0 0 0 0; }
+.card:hover { box-shadow: 0 0 24px rgba(0,240,255,0.15); }
+
+/* Project grid */
+.grid-projects {
+  @apply grid gap-5 md:gap-6;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+/* Pills / tags */
+.pill {
+  @apply inline-flex items-center gap-2 text-xs px-3 py-1 rounded-full border;
+  border-color: var(--border); color: var(--text);
+}
+.pill-dot { width: 6px; height: 6px; border-radius: 9999px; background: var(--neon); }
+
+/* Utility: neon button */
+.btn-neon {
+  @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition;
+  color: #081217; background: var(--neon);
+  box-shadow: 0 0 12px rgba(0,240,255,0.35);
+}
+.btn-neon:hover { box-shadow: 0 0 22px rgba(0,240,255,0.55); transform: translateY(-1px); }
+
+/* Small helpers */
+.muted { color: var(--muted); }
+.divider { @apply my-12 border-t; border-color: var(--border); }

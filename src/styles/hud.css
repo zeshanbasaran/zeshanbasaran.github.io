@@ -1,0 +1,465 @@
+/* -----------------------------------------------------------
+ * File: src/styles/hud.css
+ * Project: Sci-Fi Portfolio Website (HUD Layer)
+ * Author: Zeshan Basaran
+ *
+ * Purpose:
+ *   Styling for the “heads-up display” layer: grids, frames,
+ *   particle overlays, scanlines, status lights, reticles,
+ *   holographic panels, badges, and micro-interactions.
+ *
+ * Dependencies:
+ *   - Relies on variables from :root in base.css
+ *   - Designed to play nicely with Tailwind utility classes
+ *
+ * Notes:
+ *   - Keep this file PRESENTATIONAL. No layout resets here.
+ *   - All animations include a prefers-reduced-motion fallback.
+ * ----------------------------------------------------------- */
+
+/* ---------- Root-scoped HUD tokens (overridable per page) --------- */
+:root {
+  --hud-grid-color: rgba(0, 247, 255, 0.12);
+  --hud-grid-color-strong: rgba(0, 247, 255, 0.22);
+  --hud-scanline-color: rgba(0, 247, 255, 0.15);
+  --hud-crosshair-color: rgba(255, 255, 255, 0.22);
+  --hud-particle-color: rgba(0, 247, 255, 0.7);
+  --hud-panel-bg: rgba(18, 24, 41, 0.7);
+  --hud-panel-border: rgba(0, 247, 255, 0.5);
+  --hud-panel-shadow: 0 0 12px rgba(0, 247, 255, 0.15), inset 0 0 24px rgba(255, 0, 127, 0.06);
+  --hud-success: #22eaa6;
+  --hud-warn: #ffd166;
+  --hud-err: #ff4d6d;
+  --hud-info: #00f7ff;
+  --hud-z-overlay: 60;
+  --hud-z-effects: 50;
+  --hud-z-panels: 40;
+  --hud-z-grid: 30;
+}
+
+/* ---------- HUD Container (positioning layer) ---------- */
+.hud-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none; /* allow clicks to pass through by default */
+  z-index: var(--hud-z-overlay);
+}
+
+/* Allow specific interactive HUD widgets to receive events */
+.hud-interactive {
+  pointer-events: auto;
+}
+
+/* ---------- Grid Overlay (subtle isometric/rect grid) ---------- */
+.hud-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, var(--hud-grid-color) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--hud-grid-color) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(ellipse at 50% 30%, rgba(0,0,0,0.9), rgba(0,0,0,0.05) 60%, transparent 85%);
+  z-index: var(--hud-z-grid);
+}
+
+.hud-grid--dense {
+  background-size: 20px 20px;
+  background-image:
+    linear-gradient(to right, var(--hud-grid-color) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--hud-grid-color) 1px, transparent 1px),
+    linear-gradient(to right, var(--hud-grid-color-strong) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--hud-grid-color-strong) 1px, transparent 1px);
+  background-position:
+    0 0, 0 0,
+    0 0, 0 0;
+  background-size:
+    40px 40px, 40px 40px,
+    200px 200px, 200px 200px;
+}
+
+/* ---------- Scanlines (CRT-like, super light) ---------- */
+.hud-scanlines {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(
+    to bottom,
+    transparent 95%,
+    var(--hud-scanline-color) 96%,
+    transparent 100%
+  );
+  background-size: 100% 3px;
+  opacity: 0.25;
+  mix-blend-mode: screen;
+  z-index: var(--hud-z-effects);
+  animation: hud-scan 8s linear infinite;
+}
+
+@keyframes hud-scan {
+  0% { background-position-y: 0; }
+  100% { background-position-y: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hud-scanlines { animation: none; }
+}
+
+/* ---------- Particles (subtle starfield) ---------- */
+.hud-particles {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: var(--hud-z-effects);
+}
+
+.hud-particles > i {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: var(--hud-particle-color);
+  border-radius: 50%;
+  filter: drop-shadow(0 0 4px var(--hud-particle-color));
+  opacity: 0.9;
+  animation: drift linear infinite;
+}
+
+@keyframes drift {
+  from { transform: translate3d(0, -10%, 0); }
+  to   { transform: translate3d(0, 110%, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hud-particles > i { animation: none; }
+}
+
+/* Utility to easily generate N particles with delays (paired with JS) */
+.hud-particles > i[data-speed="slow"]   { animation-duration: 20s; }
+.hud-particles > i[data-speed="normal"] { animation-duration: 12s; }
+.hud-particles > i[data-speed="fast"]   { animation-duration: 7s; }
+.hud-particles > i[data-delay]          { animation-delay: calc(var(--delay, 0) * 1s); }
+
+/* ---------- Neon Frame (corners & borders) ---------- */
+.neon-frame {
+  position: relative;
+  border: 1px solid var(--hud-panel-border);
+  background: var(--hud-panel-bg);
+  box-shadow: var(--hud-panel-shadow);
+  backdrop-filter: blur(6px) saturate(120%);
+}
+
+.neon-frame::before,
+.neon-frame::after {
+  content: "";
+  position: absolute;
+  border: 1px solid var(--hud-panel-border);
+  pointer-events: none;
+}
+
+.neon-frame::before {
+  inset: 8px;
+  opacity: 0.4;
+}
+
+.neon-frame::after {
+  inset: 0;
+  border-radius: 10px;
+  box-shadow: 0 0 18px rgba(0, 247, 255, 0.2), inset 0 0 24px rgba(0, 247, 255, 0.12);
+}
+
+/* Corner brackets */
+.neon-corners::before,
+.neon-corners::after {
+  content: "";
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--hud-panel-border);
+  filter: drop-shadow(0 0 6px var(--hud-panel-border));
+}
+
+.neon-corners::before { top: 8px; left: 8px; border-right: none; border-bottom: none; }
+.neon-corners::after  { bottom: 8px; right: 8px; border-left: none; border-top: none; }
+
+/* ---------- HUD Grid Layout Helpers ---------- */
+.hud-grid-wrap {
+  display: grid;
+  gap: 1rem;
+}
+
+.hud-grid-wrap--12 {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+}
+
+.hud-span-3 { grid-column: span 3 / span 3; }
+.hud-span-4 { grid-column: span 4 / span 4; }
+.hud-span-6 { grid-column: span 6 / span 6; }
+.hud-span-8 { grid-column: span 8 / span 8; }
+.hud-span-12 { grid-column: 1 / -1; }
+
+/* ---------- Status Lights / Indicators ---------- */
+.hud-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-heading, system-ui);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  color: var(--color-text, #e0e6ed);
+}
+
+.hud-led {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.hud-led--ok    { color: var(--hud-success); background: currentColor; }
+.hud-led--idle  { color: var(--hud-info);    background: currentColor; opacity: 0.7; }
+.hud-led--warn  { color: var(--hud-warn);    background: currentColor; }
+.hud-led--err   { color: var(--hud-err);     background: currentColor; }
+
+/* pulsing animation for active states */
+.hud-led--pulse {
+  animation: led-pulse 1.8s ease-in-out infinite;
+}
+@keyframes led-pulse {
+  0%, 100% { filter: drop-shadow(0 0 4px currentColor); transform: scale(1); }
+  50%      { filter: drop-shadow(0 0 10px currentColor); transform: scale(1.15); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hud-led--pulse { animation: none; }
+}
+
+/* ---------- Reticle / Crosshair ---------- */
+.hud-reticle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 120px;
+  height: 120px;
+  margin: -60px 0 0 -60px;
+  pointer-events: none;
+  z-index: var(--hud-z-effects);
+}
+
+.hud-reticle::before,
+.hud-reticle::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px dashed var(--hud-crosshair-color);
+  border-radius: 50%;
+}
+
+.hud-reticle .line {
+  position: absolute;
+  background: var(--hud-crosshair-color);
+}
+.hud-reticle .line.h { top: 50%; left: 0; right: 0; height: 1px; transform: translateY(-50%); }
+.hud-reticle .line.v { left: 50%; top: 0; bottom: 0; width: 1px; transform: translateX(-50%); }
+
+/* ---------- Holographic Panel / Card ---------- */
+.hud-card {
+  position: relative;
+  padding: 1rem;
+  border: 1px solid var(--hud-panel-border);
+  background: linear-gradient(135deg, rgba(0, 247, 255, 0.06), rgba(255, 0, 127, 0.04)) , var(--hud-panel-bg);
+  box-shadow: var(--hud-panel-shadow);
+  backdrop-filter: blur(8px) saturate(120%);
+  border-radius: 12px;
+  color: var(--color-text, #e0e6ed);
+}
+
+.hud-card__title {
+  font-family: var(--font-heading, system-ui);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-accent, #00f7ff);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hud-card__title::after {
+  content: "";
+  flex: 1 1 auto;
+  height: 1px;
+  background: linear-gradient(to right, rgba(0,247,255,0.0), rgba(0,247,255,0.5));
+  margin-left: 0.5rem;
+}
+
+/* ---------- Tabs (HUD variant) ---------- */
+.hud-tabs {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--hud-panel-border);
+}
+
+.hud-tab {
+  position: relative;
+  padding: 0.5rem 0.75rem;
+  font-family: var(--font-heading, system-ui);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text, #e0e6ed);
+  opacity: 0.75;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.hud-tab:hover { opacity: 1; }
+
+.hud-tab[aria-selected="true"] {
+  opacity: 1;
+  color: var(--color-accent, #00f7ff);
+}
+
+.hud-tab[aria-selected="true"]::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: -1px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-accent, #00f7ff), rgba(255,0,127,0.6));
+  box-shadow: 0 0 8px rgba(0,247,255,0.6);
+}
+
+/* ---------- Badges (statuses/labels) ---------- */
+.hud-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--hud-panel-border);
+  background: rgba(10, 15, 28, 0.6);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.hud-badge--ok   { color: var(--hud-success); border-color: rgba(34,234,166,0.6); }
+.hud-badge--warn { color: var(--hud-warn);    border-color: rgba(255,209,102,0.6); }
+.hud-badge--err  { color: var(--hud-err);     border-color: rgba(255,77,109,0.6); }
+.hud-badge--info { color: var(--hud-info);    border-color: rgba(0,247,255,0.6); }
+
+/* ---------- Terminal Overlay ---------- */
+.hud-terminal {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  background: rgba(5, 10, 20, 0.9);
+  color: #c8f6ff;
+  border: 1px solid rgba(0, 247, 255, 0.4);
+  border-radius: 10px;
+  box-shadow: 0 0 18px rgba(0, 247, 255, 0.15);
+  overflow: hidden;
+}
+
+.hud-terminal__titlebar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid rgba(0, 247, 255, 0.2);
+  background: linear-gradient(180deg, rgba(0, 247, 255, 0.08), rgba(0, 247, 255, 0.02));
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+}
+
+.hud-terminal__body {
+  padding: 0.75rem;
+  max-height: 50vh;
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 247, 255, 0.5) transparent;
+}
+
+/* ---------- Mini Dashboard Panels ---------- */
+.hud-panel {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: var(--hud-panel-bg);
+  border: 1px solid var(--hud-panel-border);
+  border-radius: 12px;
+  box-shadow: var(--hud-panel-shadow);
+}
+
+.hud-panel__row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hud-metric {
+  font-family: var(--font-heading, system-ui);
+  color: var(--color-accent, #00f7ff);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.9rem;
+}
+
+.hud-value {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+/* ---------- Tooltips ---------- */
+.hud-tip {
+  position: relative;
+}
+
+.hud-tip:hover .hud-tip__bubble {
+  opacity: 1; transform: translateY(0); visibility: visible;
+}
+
+.hud-tip__bubble {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  transform: translateY(6px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0s linear 0.18s;
+  background: rgba(10, 15, 28, 0.95);
+  border: 1px solid var(--hud-panel-border);
+  border-radius: 8px;
+  padding: 0.4rem 0.6rem;
+  box-shadow: var(--hud-panel-shadow);
+  color: var(--color-text, #e0e6ed);
+  font-size: 0.8rem;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: var(--hud-z-panels);
+}
+
+.hud-tip__bubble::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 10px;
+  border: 6px solid transparent;
+  border-top-color: var(--hud-panel-border);
+}
+
+/* ---------- Utility: Glow Pulses / Hovers ---------- */
+.hud-hover-glow {
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.hud-hover-glow:hover {
+  box-shadow: 0 0 20px rgba(0, 247, 255, 0.35), inset 0 0 28px rgba(0, 247, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+/* ---------- Accessibility / Motion Safety ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .hud-hover-glow:hover { transform: none; }
+}
+
+/* ---------- Z-layer helpers ---------- */
+.z-hud-grid     { z-index: var(--hud-z-grid) !important; }
+.z-hud-panels   { z-index: var(--hud-z-panels) !important; }
+.z-hud-effects  { z-index: var(--hud-z-effects) !important; }
+.z-hud-overlay  { z-index: var(--hud-z-overlay) !important; }

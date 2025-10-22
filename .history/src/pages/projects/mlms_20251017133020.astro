@@ -1,0 +1,238 @@
+---
+/**
+ * Project Page: MLMS (Music Library Management System)
+ * Author: Zeshan Basaran
+ * Repo: https://github.com/zeshanbasaran/mlms-project
+ * Description:
+ *   Futuristic/sci‑fi themed project detail page in the same visual style
+ *   as the Systematic Backtester page. Uses existing HUD/Neon UI components
+ *   and client-side GitHub API fetches for live repo stats and language mix.
+ *
+ * Notes:
+ *   - Assumes you have shared components already created:
+ *       • Base (site layout wrapper)
+ *       • NeonCard, HUDGrid, NeonFrame, ParticleField, Tabs
+ *   - TailwindCSS classes rely on your global theme tokens.
+ *   - Update the preview image paths if you add real screenshots.
+ */
+
+const owner = "zeshanbasaran";
+const repo  = "mlms-project";
+const title = "Music Library Management System (MLMS)";
+const tagline = "Admin-first, locally hosted music library with clean Tailwind UI, playlists, and role-based access.";
+---
+
+import Base from "../../layouts/Base.astro";
+
+<!-- Page Wrapper -->
+<Base title={`${title} · Project`} description={tagline}>
+  <!-- Decorative Background Layer -->
+  <div class="fixed inset-0 -z-10 overflow-hidden">
+    <ParticleField class="opacity-30" />
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-500/5 to-purple-500/5 pointer-events-none"></div>
+  </div>
+
+  <!-- Header / Hero -->
+  <section class="relative mx-auto max-w-6xl px-4 py-16 sm:py-20">
+    <HUDGrid class="absolute inset-0 -z-10 opacity-20" />
+
+    <div class="flex flex-col gap-6 sm:gap-8">
+      <div>
+        <h1 class="font-display text-3xl sm:text-5xl tracking-tight text-white">
+          {title}
+        </h1>
+        <p class="mt-3 max-w-3xl text-slate-300/90">
+          {tagline}
+        </p>
+      </div>
+
+      <!-- Quick Meta Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <NeonCard class="p-4">
+          <div class="text-sm uppercase tracking-wide text-slate-400">Status</div>
+          <div class="mt-1 text-lg text-slate-100">Active Development</div>
+        </NeonCard>
+        <NeonCard class="p-4">
+          <div class="text-sm uppercase tracking-wide text-slate-400">Tech Stack</div>
+          <div class="mt-1 text-lg text-slate-100">Astro · TypeScript · Tailwind · MySQL · Node</div>
+        </NeonCard>
+        <NeonCard class="p-4">
+          <div class="text-sm uppercase tracking-wide text-slate-400">Repo</div>
+          <div class="mt-1 flex items-center gap-3 text-slate-100">
+            <a class="underline decoration-cyan-400/60 underline-offset-4 hover:text-white"
+               href={`https://github.com/${owner}/${repo}`} target="_blank" rel="noopener">
+              github.com/{owner}/{repo}
+            </a>
+          </div>
+        </NeonCard>
+      </div>
+
+      <!-- CTA Buttons -->
+      <div class="flex flex-wrap gap-3">
+        <a href={`https://github.com/${owner}/${repo}`} target="_blank" rel="noopener"
+           class="inline-flex items-center gap-2 rounded-2xl border border-cyan-400/30 bg-cyan-400/10 px-4 py-2 text-cyan-200 hover:bg-cyan-400/20">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.73.5.99 5.24.99 11.52c0 4.86 3.15 8.98 7.51 10.43.55.1.76-.24.76-.53 0-.26-.01-1.13-.02-2.05-3.05.66-3.7-1.3-3.7-1.3-.5-1.27-1.23-1.61-1.23-1.61-.99-.68.07-.67.07-.67 1.1.08 1.68 1.13 1.68 1.13.98 1.68 2.57 1.2 3.2.91.1-.71.38-1.2.69-1.48-2.43-.28-4.98-1.22-4.98-5.42 0-1.2.43-2.18 1.14-2.95-.12-.28-.5-1.4.11-2.93 0 0 .95-.3 3.12 1.13a10.82 10.82 0 0 1 2.84-.38c.96 0 1.93.13 2.84.38 2.17-1.43 3.12-1.13 3.12-1.13.61 1.53.23 2.65.11 2.93.71.77 1.14 1.75 1.14 2.95 0 4.21-2.56 5.13-5 5.4.39.34.73 1 .73 2.02 0 1.46-.01 2.64-.01 3 0 .29.2.64.77.53A10.53 10.53 0 0 0 23 11.52C23 5.24 18.27.5 12 .5Z"/></svg>
+          View Repository
+        </a>
+        <!-- Optional: Wire this when a demo is deployed -->
+        <button disabled
+                class="inline-flex cursor-not-allowed items-center gap-2 rounded-2xl border border-slate-500/30 bg-slate-500/10 px-4 py-2 text-slate-300">
+          Live Demo (coming soon)
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live Repo Stats + Languages -->
+  <section class="mx-auto max-w-6xl px-4 pb-8 sm:pb-12">
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+      <NeonCard class="p-5 md:col-span-2">
+        <div class="flex items-center justify-between">
+          <h2 class="font-display text-xl text-white">Repository Stats</h2>
+          <div class="text-xs text-slate-400">Real‑time via GitHub API</div>
+        </div>
+        <div id="repoStats" class="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <!-- Populated by loadRepoStats() -->
+          <div class="rounded-xl bg-slate-900/40 p-4">
+            <div class="text-xs uppercase tracking-wide text-slate-400">⭐ Stars</div>
+            <div id="stars" class="mt-1 text-2xl font-semibold text-slate-100">—</div>
+          </div>
+          <div class="rounded-xl bg-slate-900/40 p-4">
+            <div class="text-xs uppercase tracking-wide text-slate-400">🍴 Forks</div>
+            <div id="forks" class="mt-1 text-2xl font-semibold text-slate-100">—</div>
+          </div>
+          <div class="rounded-xl bg-slate-900/40 p-4">
+            <div class="text-xs uppercase tracking-wide text-slate-400">🪲 Open Issues</div>
+            <div id="issues" class="mt-1 text-2xl font-semibold text-slate-100">—</div>
+          </div>
+          <div class="rounded-xl bg-slate-900/40 p-4">
+            <div class="text-xs uppercase tracking-wide text-slate-400">⬆️ Last Push</div>
+            <div id="pushed" class="mt-1 text-2xl font-semibold text-slate-100">—</div>
+          </div>
+        </div>
+      </NeonCard>
+
+      <NeonCard class="p-5">
+        <div class="flex items-center justify-between">
+          <h2 class="font-display text-xl text-white">Languages</h2>
+          <div class="text-xs text-slate-400">Top to bottom</div>
+        </div>
+        <ul id="langList" class="mt-3 space-y-1 text-slate-300/90">
+          <!-- Populated by loadLanguages() (filtered > 0%) -->
+          <li class="text-slate-500">Loading…</li>
+        </ul>
+      </NeonCard>
+    </div>
+  </section>
+
+  <!-- Feature Overview -->
+  <section class="mx-auto max-w-6xl px-4 pb-8 sm:pb-12">
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+      <NeonCard class="p-6 md:col-span-2">
+        <h2 class="font-display text-xl text-white">Highlights</h2>
+        <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div class="rounded-2xl border border-cyan-500/20 bg-slate-900/40 p-4">
+            <div class="text-sm font-semibold text-cyan-100">Admin Panel</div>
+            <p class="mt-1 text-sm text-slate-300/90">Tabbed library manager for Tracks · Albums · Artists with inline add/edit, bulk delete confirmations, and search/filter.</p>
+          </div>
+          <div class="rounded-2xl border border-cyan-500/20 bg-slate-900/40 p-4">
+            <div class="text-sm font-semibold text-cyan-100">Playlists</div>
+            <p class="mt-1 text-sm text-slate-300/90">Create user playlists, add/remove tracks, preview after creation, and manage with clean Tailwind UI.</p>
+          </div>
+          <div class="rounded-2xl border border-cyan-500/20 bg-slate-900/40 p-4">
+            <div class="text-sm font-semibold text-cyan-100">RBAC</div>
+            <p class="mt-1 text-sm text-slate-300/90">Role-based access control with admin vs. regular users and guarded routes/components.</p>
+          </div>
+          <div class="rounded-2xl border border-cyan-500/20 bg-slate-900/40 p-4">
+            <div class="text-sm font-semibold text-cyan-100">DB Layer</div>
+            <p class="mt-1 text-sm text-slate-300/90">MySQL (or SQLite) models & migrations, RESTful endpoints, and prepared queries for fast lookups.</p>
+          </div>
+        </div>
+      </NeonCard>
+
+      <NeonCard class="p-6">
+        <h2 class="font-display text-xl text-white">Spec Snapshot</h2>
+        <ul class="mt-3 list-disc space-y-2 pl-5 text-sm text-slate-300/90">
+          <li>Artist → Album → Track nested overview with pagination.</li>
+          <li>Inline row add/edit; confirmation modals for deletions.</li>
+          <li>Search across artist/album/song, plus sort and bulk actions.</li>
+          <li>Toast notifications for CRUD success/error.</li>
+          <li>Change-password on admin profile page.</li>
+        </ul>
+      </NeonCard>
+    </div>
+  </section>
+
+  <!-- Mini Previews (dashboard-style thumbnails) -->
+  <section class="mx-auto max-w-6xl px-4 pb-16 sm:pb-24">
+    <h2 class="font-display text-xl text-white">Mini Previews</h2>
+    <p class="mt-1 text-slate-300/90">Hover to illuminate; click to open full image.</p>
+
+    <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <!-- Replace the src paths with real screenshots from /public/images/mlms/... -->
+      <NeonFrame class="group relative block overflow-hidden rounded-2xl">
+        <a href="/images/mlms/admin-library.png" target="_blank" rel="noopener">
+          <img src="/images/mlms/admin-library.png" alt="Admin Library View"
+               class="aspect-video w-full object-cover opacity-80 transition group-hover:opacity-100" loading="lazy" />
+        </a>
+      </NeonFrame>
+      <NeonFrame class="group relative block overflow-hidden rounded-2xl">
+        <a href="/images/mlms/playlist-creator.png" target="_blank" rel="noopener">
+          <img src="/images/mlms/playlist-creator.png" alt="Playlist Creator"
+               class="aspect-video w-full object-cover opacity-80 transition group-hover:opacity-100" loading="lazy" />
+        </a>
+      </NeonFrame>
+      <NeonFrame class="group relative block overflow-hidden rounded-2xl">
+        <a href="/images/mlms/admin-dashboard.png" target="_blank" rel="noopener">
+          <img src="/images/mlms/admin-dashboard.png" alt="Admin Dashboard"
+               class="aspect-video w-full object-cover opacity-80 transition group-hover:opacity-100" loading="lazy" />
+        </a>
+      </NeonFrame>
+    </div>
+  </section>
+
+  <!-- Scripts: GitHub API fetch for live stats and language breakdown -->
+  <script>
+    const owner = "{owner}";
+    const repo  = "{repo}";
+
+    async function loadRepoStats() {
+      try {
+        const res = await fetch(`https://api.github.com/repos/${owner}/${repo}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const toLocalTime = (iso) => new Date(iso).toLocaleString();
+        const byId = (id) => document.getElementById(id);
+        byId('stars').textContent  = (data.stargazers_count ?? 0).toString();
+        byId('forks').textContent  = (data.forks_count ?? 0).toString();
+        byId('issues').textContent = (data.open_issues_count ?? 0).toString();
+        byId('pushed').textContent = data.pushed_at ? toLocalTime(data.pushed_at) : '—';
+      } catch {}
+    }
+
+    async function loadLanguages() {
+      try {
+        const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/languages`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const total = Object.values(data).reduce((a, b) => a + b, 0);
+        const items = Object.entries(data)
+          .map(([name, bytes]) => {
+            const pct = total ? Math.round((bytes / total) * 1000) / 10 : 0;
+            return { name, pct };
+          })
+          // Filter strictly greater than 0% (avoids 0.0)
+          .filter((x) => x.pct > 0)
+          // Sort descending by percentage
+          .sort((a, b) => b.pct - a.pct)
+          .map(({ name, pct }) => `<li><span class="font-medium text-slate-200">${name}</span> · ${pct}%</li>`)
+          .join("\n");
+        const ul = document.getElementById('langList');
+        if (ul) ul.innerHTML = items || '<li class="text-slate-500">No language data</li>';
+      } catch {}
+    }
+
+    loadRepoStats();
+    loadLanguages();
+  </script>
+</Base>

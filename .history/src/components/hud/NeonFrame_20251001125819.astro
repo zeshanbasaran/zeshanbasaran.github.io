@@ -1,0 +1,357 @@
+---
+/**
+ * src/components/hud/NeonFrame.astro
+ * -----------------------------------------------------------------------------
+ * Futuristic “neon” HUD frame for wrapping charts, stats, or any content.
+ * Think holographic panel with glowing corners, animated border, and scanlines.
+ *
+ * FEATURES
+ * - Corner notches with glow (square or chamfered “cut” corners)
+ * - Animated perimeter stroke (optional) with subtle pulse
+ * - Scanline overlay, vignette mask, and optional watermark label
+ * - Title bar with status LED; fully slottable header/footer
+ * - Linkable: pass `href` to make the entire frame clickable
+ * - Accessible: role + aria labels, focus-visible ring, reduced-motion aware
+ *
+ * USAGE
+ * -----
+ * <NeonFrame title="Mission Panel" subtitle="Telemetry A-17" accent="cyan" pulse>
+ *   <p>Body content… charts, metrics, etc.</p>
+ * </NeonFrame>
+ *
+ * <NeonFrame
+ *   variant="glass"
+ *   accent="#7c3aed"
+ *   title="Alpha Node"
+ *   status="online"
+ *   scanlines
+ *   watermark="CLASSIFIED"
+ * >
+ *   <div class="h-48 grid place-items-center">…</div>
+ *   <div slot="footer" class="text-xs opacity-80">Updated: 2025-10-01</div>
+ * </NeonFrame>
+ *
+ * PROPS
+ * - title?: string
+ * - subtitle?: string
+ * - status?: "online" | "idle" | "offline" | "error" | string   // controls LED tint
+ * - href?: string                       // wraps as <a> when provided
+ * - accent?: string                     // tailwind-ish key ("cyan", "violet") or any CSS color
+ * - variant?: "outline" | "glass" | "solid"  (visual background)
+ * - corners?: "square" | "cut"          // corner style (default "cut")
+ * - border?: "thin" | "thick" | "double"// border weight/pattern
+ * - glow?: boolean                      // outer drop glow (default true)
+ * - pulse?: boolean                     // animated perimeter pulse (default false)
+ * - scanlines?: boolean                 // CRT-like scanlines (default false)
+ * - watermark?: string                  // faded diagonal label behind content
+ * - interactive?: boolean               // hover lift + ring (default true)
+ * - class?: string
+ * - id?: string
+ *
+ * SLOTS
+ * - (default)  Body content
+ * - header     Replace entire header (title/subtitle/status)
+ * - footer     Footer area
+ * - badge      Right-aligned small badge in the header row
+ * -----------------------------------------------------------------------------
+ */
+
+interface Props {
+  title?: string;
+  subtitle?: string;
+  status?: string;
+  href?: string;
+  accent?: string;
+  variant?: "outline" | "glass" | "solid";
+  corners?: "square" | "cut";
+  border?: "thin" | "thick" | "double";
+  glow?: boolean;
+  pulse?: boolean;
+  scanlines?: boolean;
+  watermark?: string;
+  interactive?: boolean;
+  class?: string;
+  id?: string;
+}
+
+const {
+  title,
+  subtitle,
+  status = "idle",
+  href,
+  accent,
+  variant = "outline",
+  corners = "cut",
+  border = "thin",
+  glow = true,
+  pulse = false,
+  scanlines = false,
+  watermark,
+  interactive = true,
+  class: className = "",
+  id,
+} = Astro.props as Props;
+
+// Map common accent keywords to neon-ish RGBA pairs (glow / strong)
+function resolveAccent(a?: string) {
+  const map: Record<string, [string, string]> = {
+    cyan: ["rgba(56,189,248,0.75)", "rgb(125,211,252)"],
+    blue: ["rgba(59,130,246,0.70)", "rgb(147,197,253)"],
+    violet: ["rgba(139,92,246,0.70)", "rgb(196,181,253)"],
+    fuchsia: ["rgba(217,70,239,0.70)", "rgb(240,171,252)"],
+    emerald: ["rgba(16,185,129,0.70)", "rgb(110,231,183)"],
+    lime: ["rgba(132,204,22,0.70)", "rgb(190,242,100)"],
+    amber: ["rgba(245,158,11,0.70)", "rgb(251,191,36)"],
+    red: ["rgba(239,68,68,0.70)", "rgb(252,165,165)"],
+  };
+  if (!a) return null;
+  const key = a.toLowerCase().trim();
+  if (map[key]) return { neon: map[key][0], strong: map[key][1] };
+  return { neon: a, strong: a };
+}
+
+const accentVars = resolveAccent(accent);
+
+// status LED color map
+function statusColor(s: string) {
+  const k = s.toLowerCase();
+  if (k.includes("online") || k.includes("ok") || k.includes("ready")) return "hsl(160 84% 39%)";
+  if (k.includes("idle") || k.includes("standby")) return "hsl(48 96% 53%)";
+  if (k.includes("offline") || k.includes("paused")) return "hsl(215 20% 65%)";
+  if (k.includes("err") || k.includes("fail") || k.includes("crit")) return "hsl(0 84% 60%)";
+  return "hsl(190 90% 60%)"; // default cyan-ish
+}
+
+const wrapperTag = href ? "a" : "div";
+const role = href ? undefined : "region";
+const ariaLabel = title ? title : "HUD frame";
+
+const baseClass = [
+  "relative overflow-hidden",
+  "rounded-2xl",
+  "border", // baseline, refined via [data-border]
+  "bg-zinc-950/60",
+  "shadow-[inset_0_0_0_1px_rgba(255,255,255,0.03)]",
+  interactive ? "transition-all motion-safe:will-change-transform" : "",
+  className || "",
+].filter(Boolean).join(" ");
+
+const variantClass =
+  variant === "glass"
+    ? "backdrop-blur-md border-white/10 bg-zinc-950/40"
+    : variant === "solid"
+    ? "border-zinc-800 bg-zinc-900/90"
+    : "border-zinc-800 bg-zinc-950/70";
+
+const styleVars = `
+  ${accentVars ? `--neon:${accentVars.neon};--neon-strong:${accentVars.strong};` : ""}
+  --led:${statusColor(status)};
+`.trim();
+
+const headerTitleCls = "text-sm sm:text-base font-semibold tracking-tight text-zinc-200";
+const headerSubCls = "text-[11px] sm:text-xs text-zinc-400";
+const bodyPad = "p-4 sm:p-5";
+const headerPad = "px-4 sm:px-5 pt-3 sm:pt-4";
+const footerPad = "px-4 sm:px-5 pb-3 sm:pb-4";
+---
+
+<style>
+  /* ----------------------------------------------------------------------------
+   * Global defaults for CSS variables
+   * ---------------------------------------------------------------------------- */
+  :global(:root) {
+    --neon: rgba(56, 189, 248, 0.75);   /* glow */
+    --neon-strong: rgb(125, 211, 252);  /* strong text/line */
+  }
+
+  /* ----------------------------------------------------------------------------
+   * Decorative perimeter stroke (animated when [data-pulse="true"])
+   * ---------------------------------------------------------------------------- */
+  .nf-ring::before,
+  .nf-ring::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+  }
+
+  /* base perimeter using gradient stroke illusion */
+  .nf-ring::before {
+    background:
+      linear-gradient(90deg, transparent, var(--neon), transparent) top / 100% 1px no-repeat,
+      linear-gradient(90deg, transparent, var(--neon), transparent) bottom / 100% 1px no-repeat,
+      linear-gradient(0deg,  transparent, var(--neon), transparent) left   / 1px 100% no-repeat,
+      linear-gradient(0deg,  transparent, var(--neon), transparent) right  / 1px 100% no-repeat;
+    opacity: 0.55;
+    mix-blend-mode: screen;
+  }
+
+  /* animated sweep */
+  .nf-ring[data-pulse="true"]::after {
+    background:
+      conic-gradient(from var(--angle, 0deg), transparent 0deg, var(--neon) 90deg, transparent 180deg) border-box;
+    -webkit-mask: 
+      radial-gradient(closest-side, transparent calc(100% - 2px), #000 0) content-box,
+      radial-gradient(farthest-side, #000 calc(100% - 1px), transparent 0) border-box;
+    mask:
+      radial-gradient(closest-side, transparent calc(100% - 2px), #000 0) content-box,
+      radial-gradient(farthest-side, #000 calc(100% - 1px), transparent 0) border-box;
+    animation: nf-spin 6s linear infinite;
+    opacity: 0.35;
+  }
+
+  @keyframes nf-spin {
+    to { --angle: 360deg; }
+  }
+
+  /* Outer glow */
+  .nf-glow {
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--neon) 28%, rgba(255,255,255,0.06)) inset,
+      0 0 22px -6px var(--neon),
+      0 0 48px -10px color-mix(in oklab, var(--neon) 70%, transparent);
+  }
+
+  /* ----------------------------------------------------------------------------
+   * Corner styles
+   * ---------------------------------------------------------------------------- */
+  .nf-corners[data-corners="cut"]::before,
+  .nf-corners[data-corners="cut"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background:
+      /* cut corners via gradients in the corners */
+      linear-gradient(135deg, transparent 12px, var(--neon-strong) 12px, transparent 14px) top left / 50% 50% no-repeat,
+      linear-gradient(-135deg, transparent 12px, var(--neon-strong) 12px, transparent 14px) top right / 50% 50% no-repeat,
+      linear-gradient(45deg, transparent 12px, var(--neon-strong) 12px, transparent 14px) bottom left / 50% 50% no-repeat,
+      linear-gradient(-45deg, transparent 12px, var(--neon-strong) 12px, transparent 14px) bottom right / 50% 50% no-repeat;
+    opacity: .22;
+    mix-blend-mode: screen;
+  }
+  .nf-corners[data-corners="square"]::before { content: none; }
+
+  /* ----------------------------------------------------------------------------
+   * Border weights / patterns
+   * ---------------------------------------------------------------------------- */
+  .nf-border[data-border="thin"] { border-width: 1px; }
+  .nf-border[data-border="thick"] { border-width: 2px; }
+  .nf-border[data-border="double"] {
+    border-width: 1px;
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--neon) 22%, rgba(255,255,255,0.05)) inset,
+      0 0 0 2px rgba(255,255,255,0.03) inset;
+  }
+
+  /* Focus ring for keyboard users */
+  .nf-focus:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px color-mix(in oklab, var(--neon) 55%, white),
+      0 0 28px var(--neon);
+  }
+
+  /* Hover lift (disabled with prefers-reduced-motion) */
+  @media (prefers-reduced-motion: no-preference) {
+    .nf-hover:hover { transform: translateY(-2px); }
+  }
+
+  /* ----------------------------------------------------------------------------
+   * Scanlines + vignette + watermark
+   * ---------------------------------------------------------------------------- */
+  .nf-overlay::before,
+  .nf-overlay::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+  }
+  /* scanlines */
+  .nf-overlay[data-scan="true"]::before {
+    background-image:
+      repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.06) 0px,
+        rgba(255,255,255,0.06) 1px,
+        transparent 2px,
+        transparent 3px
+      );
+    mix-blend-mode: overlay;
+    opacity: .15;
+  }
+  /* vignette */
+  .nf-overlay::after {
+    background:
+      radial-gradient(100% 120% at 50% 50%, transparent 60%, rgba(0,0,0,0.35) 100%);
+  }
+
+  /* Watermark text */
+  .nf-watermark {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    display: grid;
+    place-items: center;
+    opacity: .08;
+    font-weight: 800;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--neon-strong);
+    transform: rotate(-18deg);
+    mix-blend-mode: screen;
+    font-size: clamp(1.75rem, 7vw, 4rem);
+  }
+</style>
+
+<component
+  is={wrapperTag}
+  id={id}
+  class={`nf-root nf-ring nf-border nf-corners nf-overlay ${baseClass} ${variantClass} ${glow ? "nf-glow" : ""} ${interactive ? "nf-hover" : ""} ${href ? "nf-focus" : ""}`}
+  role={role}
+  href={href}
+  aria-label={ariaLabel}
+  data-pulse={String(pulse)}
+  data-corners={corners}
+  data-border={border}
+  data-scan={String(scanlines)}
+  style={styleVars}
+>
+  <!-- Header -->
+  <slot name="header">
+    {(title || subtitle) ? (
+      <header class={`${headerPad}`}>
+        <div class="flex items-start gap-3">
+          <!-- Status LED -->
+          <span
+            class="mt-0.5 size-2.5 rounded-full shadow-[0_0_12px_var(--led)]"
+            style={`background: var(--led);`}
+            aria-hidden="true"
+            title={status}
+          ></span>
+          <div class="min-w-0 flex-1">
+            {title ? <h3 class={`${headerTitleCls}`}>{title}</h3> : null}
+            {subtitle ? <p class={`${headerSubCls}`}>{subtitle}</p> : null}
+          </div>
+          <div class="shrink-0">
+            <slot name="badge" />
+          </div>
+        </div>
+      </header>
+    ) : null}
+  </slot>
+
+  <!-- Body -->
+  <div class={`${bodyPad}`}>
+    {watermark ? <div class="nf-watermark select-none">{watermark}</div> : null}
+    <slot />
+  </div>
+
+  <!-- Footer -->
+  <footer class={`${footerPad}`}>
+    <slot name="footer" />
+  </footer>
+</component>

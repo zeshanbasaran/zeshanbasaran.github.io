@@ -1,0 +1,284 @@
+---
+/**
+ * src/pages/contact.astro
+ * ------------------------------------------------------------
+ * "Comms Channel" — Contact Page (Sci-Fi Console Style)
+ *
+ * Purpose:
+ *   • Gives multiple ways to reach you: email, socials, and a simple form.
+ *   • Themed like a secure communications console with subtle neon accents.
+ *   • Zero-JS by default; graceful fallbacks; print-aware.
+ *
+ * Conventions:
+ *   • Uses <Base> layout (Tailwind + glassmorphism used throughout).
+ *   • Form is wired to Formspree by default (replace FORM_ID). Falls back
+ *     to `mailto:` if you prefer not to use a third-party endpoint.
+ *
+ * Setup:
+ *   1) Replace EMAIL/LINKEDIN/GITHUB/WEBSITE with your real links.
+ *   2) To enable Formspree:
+ *        - Create a free form at https://formspree.io
+ *        - Set FORM_ID to your ID (e.g., "mbjnzvkv"), and keep USE_FORMSPREE = true
+ *      Or:
+ *        - Set USE_FORMSPREE = false to use `mailto:` fallback (opens client).
+ *   3) (Optional) Drop a vCard at /public/Zeshan_Basaran.vcf and keep VCARD_PATH.
+ * ------------------------------------------------------------
+ */
+
+import Base from "../layouts/Base.astro";
+
+// ---------- Editable contact endpoints ----------
+const NAME = "Zeshan Basaran";
+const EMAIL = "zeshan.basaran@gmail.com"; //
+const LINKEDIN = "https://www.linkedin.com/in/zeshanbasaran"; //
+const GITHUB = "https://github.com/zeshanbasaran"; //
+const WEBSITE = "https://zeshanbasaran.github.io"; //
+const VCARD_PATH = "/Zeshan_Basaran.vcf"; // optional; place in /public
+
+// ---------- Form settings ----------
+const USE_FORMSPREE = true; // toggle to false for mailto fallback
+const FORM_ID = "https://formspree.io/f/mnngyrrg"; // e.g., "mbjnzvkv"
+
+// Derived form action and method
+const FORM_ACTION = USE_FORMSPREE ? `https://formspree.io/f/${FORM_ID}` : `mailto:${EMAIL}`;
+const FORM_METHOD = USE_FORMSPREE ? "POST" : "GET";
+
+// Human-friendly SLAs (for copy only)
+const RESPONSE_TIME = "24–48 hours";
+const OFFICE = "Baltimore, MD";
+---
+
+<Base title="Contact • Zeshan Basaran" description="Establish a secure link with Zeshan Basaran. Propose a mission, request a resume, or say hi.">
+  {/* ---------- HERO ---------- */}
+  <header class="relative isolate overflow-hidden rounded-2xl border border-cyan-500/20 bg-slate-900/60 p-6 md:p-10 backdrop-blur">
+    <div class="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(80%_60%_at_20%_10%,rgba(14,165,233,.25),transparent_50%),radial-gradient(60%_60%_at_85%_40%,rgba(59,130,246,.18),transparent_50%)]"></div>
+
+    <p class="font-mono text-xs uppercase tracking-widest text-cyan-300/80">Comms Channel • Access Node</p>
+    <h1 class="mt-1 text-3xl font-bold text-cyan-100 md:text-4xl">
+      Establish Link <span class="text-cyan-400">/</span> Contact
+    </h1>
+    <p class="mt-2 max-w-2xl text-slate-300">
+      Send a transmission about data analysis, dashboards, ML experiments, or software builds. <br>
+      I usually respond within <span class="text-cyan-200">{RESPONSE_TIME}</span>.
+    </p>
+
+    {/* Quick badges */}
+    <div class="mt-4 flex flex-wrap gap-2 text-sm text-slate-400">
+      <span class="rounded-full border border-cyan-500/30 px-3 py-1 font-mono">Operator: {NAME}</span>
+      <span class="rounded-full border border-cyan-500/30 px-3 py-1 font-mono">Base: {OFFICE}</span>
+      <span class="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 px-3 py-1 font-mono">
+        <span class="h-2 w-2 animate-pulse rounded-full bg-cyan-400"></span>
+        Status: Online
+      </span>
+    </div>
+  </header>
+
+  {/* ---------- CHANNELS ROW ---------- */}
+  <section class="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+    <a
+      href={`mailto:${EMAIL}`}
+      class="group rounded-2xl border border-cyan-500/15 bg-slate-950/40 p-5 transition hover:border-cyan-400/40 hover:bg-slate-900/60"
+    >
+      <h2 class="flex items-center gap-2 text-lg font-semibold text-cyan-100">
+        <span class="h-2 w-2 rounded-full bg-cyan-400"></span>Email
+      </h2>
+      <p class="mt-1 text-slate-300">{EMAIL}</p>
+      <p class="mt-2 text-xs text-slate-400">Fastest path for detailed requests.</p>
+    </a>
+
+    <a
+      href={LINKEDIN}
+      target="_blank"
+      rel="noopener"
+      class="group rounded-2xl border border-cyan-500/15 bg-slate-950/40 p-5 transition hover:border-cyan-400/40 hover:bg-slate-900/60"
+    >
+      <h2 class="text-lg font-semibold text-cyan-100">LinkedIn</h2>
+      <p class="mt-1 text-slate-300">Connect for roles, collaborations, and updates.</p>
+      <p class="mt-2 text-xs text-slate-400">Opens in a new tab.</p>
+    </a>
+
+    <a
+      href={GITHUB}
+      target="_blank"
+      rel="noopener"
+      class="group rounded-2xl border border-cyan-500/15 bg-slate-950/40 p-5 transition hover:border-cyan-400/40 hover:bg-slate-900/60"
+    >
+      <h2 class="text-lg font-semibold text-cyan-100">GitHub</h2>
+      <p class="mt-1 text-slate-300">Browse repos, issues, and project roadmaps.</p>
+      <p class="mt-2 text-xs text-slate-400">Opens in a new tab.</p>
+    </a>
+
+    {WEBSITE && (
+      <a
+        href={WEBSITE}
+        target="_blank"
+        rel="noopener"
+        class="group rounded-2xl border border-cyan-500/15 bg-slate-950/40 p-5 transition hover:border-cyan-400/40 hover:bg-slate-900/60"
+      >
+        <h2 class="text-lg font-semibold text-cyan-100">Website</h2>
+        <p class="mt-1 text-slate-300">Portfolio, projects, and write-ups.</p>
+        <p class="mt-2 text-xs text-slate-400">Opens in a new tab.</p>
+      </a>
+    )}
+  </section>
+
+  {/* ---------- FORM PANEL ---------- */}
+  <section class="mt-8 rounded-2xl border border-cyan-500/10 bg-slate-950/40 p-6 md:p-8">
+    <h2 class="mb-2 font-mono text-sm uppercase tracking-widest text-cyan-300/80">Secure Transmission Form</h2>
+    <p class="mb-6 text-slate-300">
+      Send a short brief about your project, timeline, and the outcome you want. I’ll confirm receipt within {RESPONSE_TIME}.
+    </p>
+
+    <form
+      action={FORM_ACTION}
+      method={FORM_METHOD}
+      class="grid gap-4 md:grid-cols-2"
+    >
+      {/* Honeypot for bots */}
+      <input type="text" name="_gotcha" class="hidden" tabindex="-1" autocomplete="off" />
+
+      {/* Name */}
+      <div class="md:col-span-1">
+        <label for="name" class="block text-sm text-slate-300">Your Name</label>
+        <input
+          id="name"
+          name="name"
+          type="text"
+          required
+          autocomplete="name"
+          class="mt-1 w-full rounded-xl border border-slate-700/60 bg-slate-900/60 px-3 py-2 text-slate-100 placeholder-slate-500 outline-none ring-cyan-500/30 focus:border-cyan-400/60"
+          placeholder="Ada Lovelace"
+        />
+      </div>
+
+      {/* Email */}
+      <div class="md:col-span-1">
+        <label for="email" class="block text-sm text-slate-300">Email</label>
+        <input
+          id="email"
+          name="_replyto"
+          type="email"
+          required
+          autocomplete="email"
+          class="mt-1 w-full rounded-xl border border-slate-700/60 bg-slate-900/60 px-3 py-2 text-slate-100 placeholder-slate-500 outline-none ring-cyan-500/30 focus:border-cyan-400/60"
+          placeholder="you@domain.com"
+        />
+      </div>
+
+      {/* Subject */}
+      <div class="md:col-span-2">
+        <label for="subject" class="block text-sm text-slate-300">Subject</label>
+        <input
+          id="subject"
+          name="subject"
+          type="text"
+          class="mt-1 w-full rounded-xl border border-slate-700/60 bg-slate-900/60 px-3 py-2 text-slate-100 placeholder-slate-500 outline-none ring-cyan-500/30 focus:border-cyan-400/60"
+          placeholder="Build a factor analytics dashboard"
+        />
+      </div>
+
+      {/* Message */}
+      <div class="md:col-span-2">
+        <label for="message" class="block text-sm text-slate-300">Message</label>
+        <textarea
+          id="message"
+          name="message"
+          rows={6}
+          required
+          class="mt-1 w-full rounded-xl border border-slate-700/60 bg-slate-900/60 px-3 py-2 text-slate-100 placeholder-slate-500 outline-none ring-cyan-500/30 focus:border-cyan-400/60"
+          placeholder="Brief the mission: goals, data sources, constraints, timeline…"
+        />
+      </div>
+
+      {/* Attachments (optional hint only; needs backend to actually upload) */}
+      <div class="md:col-span-2 text-xs text-slate-400">
+        Attachments: If you need to share files, link them in your message (Google Drive, Dropbox, etc.).
+      </div>
+
+      {/* Buttons */}
+      <div class="mt-2 flex flex-wrap items-center gap-2 md:col-span-2">
+        <button
+          type="submit"
+          class="rounded-xl border border-cyan-500/40 bg-cyan-500/10 px-5 py-2 font-medium text-cyan-200 transition hover:bg-cyan-500/20"
+        >
+          {USE_FORMSPREE ? "Send Transmission" : "Compose Email"}
+        </button>
+
+        {VCARD_PATH && (
+          <a
+            href={VCARD_PATH}
+            download
+            class="rounded-xl border border-slate-600/50 bg-slate-800/60 px-4 py-2 text-slate-200 transition hover:bg-slate-800"
+          >
+            Download vCard
+          </a>
+        )}
+
+        <span class="ml-auto text-xs text-slate-500">
+          Anti-spam enabled; please allow {RESPONSE_TIME} for replies.
+        </span>
+      </div>
+
+      {/* Formspree success route (optional) */}
+      {USE_FORMSPREE && (
+        <>
+          <input type="hidden" name="_subject" value="Portfolio Contact" />
+          <input type="hidden" name="_template" value="table" />
+          <input type="hidden" name="_format" value="plain" />
+          {/* You can also add: <input type="hidden" name="_next" value="/thanks" /> */}
+        </>
+      )}
+    </form>
+  </section>
+
+  {/* ---------- FAQ / EXPECTATIONS ---------- */}
+  <section class="mt-8 grid gap-6 md:grid-cols-3">
+    <article class="rounded-2xl border border-cyan-500/10 bg-slate-950/40 p-5">
+      <h3 class="text-cyan-100">What I can help with</h3>
+      <ul class="mt-2 list-disc space-y-1 pl-5 text-slate-300">
+        <li>Data analysis, ETL, dashboards (Plotly/Dash/Streamlit)</li>
+        <li>Factor research, backtesting, risk metrics</li>
+        <li>Lightweight web tools (Astro, Tailwind, REST)</li>
+      </ul>
+    </article>
+    <article class="rounded-2xl border border-cyan-500/10 bg-slate-950/40 p-5">
+      <h3 class="text-cyan-100">Response time</h3>
+      <p class="mt-2 text-slate-300">
+        I aim to reply within {RESPONSE_TIME}. Complex briefs may include a short call to clarify scope.
+      </p>
+    </article>
+    <article class="rounded-2xl border border-cyan-500/10 bg-slate-950/40 p-5">
+      <h3 class="text-cyan-100">Availability</h3>
+      <p class="mt-2 text-slate-300">
+        Open to contract and full-time opportunities. Happy to sign an NDA for sensitive data.
+      </p>
+    </article>
+  </section>
+
+  {/* ---------- JSON-LD (ContactPage) ---------- */}
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "ContactPage",
+      name: `Contact — ${NAME}`,
+      url: WEBSITE || undefined,
+      mainEntity: {
+        "@type": "Person",
+        name: NAME,
+        email: `mailto:${EMAIL}`,
+        sameAs: [LINKEDIN, GITHUB].filter(Boolean),
+        address: { "@type": "PostalAddress", addressLocality: OFFICE, addressCountry: "US" }
+      }
+    })}
+  />
+
+  {/* ---------- Print Tweaks ---------- */}
+  <style is:global>
+    @media print {
+      .print\:hidden { display: none !important; }
+      a[href]:after { content: "" !important; }
+      body { background: white !important; }
+    }
+  </style>
+</Base>

@@ -1,0 +1,370 @@
+---
+/**
+ * =============================================================================
+ * File: src/layouts/Base.astro
+ * Author: (Your Name)
+ * Project: Sci-Fi Portfolio Website — Zeshan Basaran
+ * Description:
+ *   Global site layout with accessibility, SEO, and a subtle sci-fi/terminal
+ *   aesthetic. Provides a holographic grid background, top nav, footer,
+ *   and sensible <head> defaults. Tailwind CSS utility classes are used
+ *   throughout (works with either Tailwind v3 or v4 via @astrojs/tailwind).
+ *
+ * Exports (Props):
+ *   - title?: string
+ *       Short, page-specific title (e.g., "Projects"). The site name is
+ *       automatically appended as: "<title> · Zeshan Basaran".
+ *
+ *   - description?: string
+ *       Page description for meta/OG tags. Keep to ~155 chars.
+ *
+ *   - ogImage?: string
+ *       Absolute or site-root path to an OpenGraph/Twitter card image.
+ *       Recommended: 1200x630 (PNG or JPG).
+ *
+ *   - lang?: string
+ *       HTML lang attribute (default: "en").
+ *
+ *   - canonical?: string
+ *       Canonical URL for this page. If omitted, will try to construct from
+ *       Astro.url if available; otherwise it is skipped.
+ *
+ *   - noIndex?: boolean
+ *       If true, adds <meta name="robots" content="noindex, nofollow">.
+ *
+ *   - schema?: Record<string, any>
+ *       Optional JSON-LD payload merged into a WebSite / WebPage schema block.
+ *
+ * Conventions:
+ *   - Place page content inside this layout using the default <slot />.
+ *   - Use the ".prose" typography classes on page content when appropriate.
+ *   - Add page-level additional <head> tags using <Fragment slot="head">…</Fragment>
+ *
+ * Example:
+ *   ---
+ *   import Base from "../layouts/Base.astro";
+ *   const pageTitle = "Projects";
+ *   ---
+ *   <Base title={pageTitle} description="Analysis, ML, and engineering projects.">
+ *     <h1 class="sr-only">Projects</h1>
+ *     <!-- page content -->
+ *   </Base>
+ * =============================================================================
+ */
+
+export interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+  lang?: string;
+  canonical?: string;
+  noIndex?: boolean;
+  schema?: Record<string, any>;
+}
+
+const {
+  title = "",
+  description = "Analyzing patterns, engineering solutions, shaping the future.",
+  ogImage = "/og-default.png",
+  lang = "en",
+  canonical,
+  noIndex = false,
+  schema = {},
+} = Astro.props;
+
+// Build full page title
+const SITE_NAME = "Zeshan Basaran";
+const pageTitle = title ? `${title} · ${SITE_NAME}` : SITE_NAME;
+
+// Try to resolve canonical from the current URL if not provided
+const resolvedCanonical =
+  canonical ?? (Astro.url ? Astro.url.href : undefined);
+
+// Basic JSON-LD (WebSite + WebPage). Merges user-provided "schema" keys.
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": `${resolvedCanonical ?? ""}#website`,
+      "name": SITE_NAME,
+      "url": resolvedCanonical ?? "",
+      "inLanguage": lang,
+    },
+    {
+      "@type": "WebPage",
+      "@id": resolvedCanonical ?? "",
+      "url": resolvedCanonical ?? "",
+      "name": pageTitle,
+      "description": description,
+      "isPartOf": { "@id": `${resolvedCanonical ?? ""}#website` },
+      "inLanguage": lang,
+      ...schema,
+    },
+  ],
+};
+
+// Small helper to set a data-theme before paint (prevents flash)
+const themeBootScript = `
+(function () {
+  try {
+    const key = 'theme';
+    const stored = localStorage.getItem(key);
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const theme = stored || (prefersDark ? 'dark' : 'light');
+    document.documentElement.dataset.theme = theme;
+    // Respect color-scheme for native UI
+    document.documentElement.style.colorScheme = theme === 'dark' ? 'dark' : 'light';
+  } catch (e) {}
+})();
+`;
+---
+
+<!DOCTYPE html>
+<html lang={lang} class="scroll-smooth selection:bg-cyan-300/30 selection:text-cyan-100">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover"
+    />
+    <title>{pageTitle}</title>
+
+    {/* Robots / indexing controls */}
+    {noIndex ? <meta name="robots" content="noindex, nofollow" /> : null}
+
+    {/* Primary meta */}
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0a0f1f" />
+    <meta name="color-scheme" content="dark light" />
+
+    {/* Open Graph */}
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    {ogImage ? <meta property="og:image" content={ogImage} /> : null}
+    {resolvedCanonical ? <meta property="og:url" content={resolvedCanonical} /> : null}
+    <meta property="og:site_name" content={SITE_NAME} />
+
+    {/* Twitter Card */}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    {ogImage ? <meta name="twitter:image" content={ogImage} /> : null}
+
+    {/* Canonical */}
+    {resolvedCanonical ? <link rel="canonical" href={resolvedCanonical} /> : null}
+
+    {/* Favicon / Web App */}
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    {/* Preconnect examples (fonts/CDNs) — safe to remove if unused */}
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+    {/* Optional font — replace with your preferred family or self-hosted font */}
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+
+    {/* Inline theme boot to avoid FOUC */}
+    <script is:inline>{themeBootScript}</script>
+
+    {/* JSON-LD Schema */}
+    <script type="application/ld+json" is:inline>
+      {JSON.stringify(jsonLd)}
+    </script>
+
+    {/* Slot for page-specific <head> additions */}
+    <slot name="head" />
+  </head>
+
+  <body
+    class="min-h-screen bg-[#050914] text-slate-200 antialiased [--ring:theme(colors.cyan.400)]"
+  >
+    {/* Skip link for a11y */}
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:m-4 focus:rounded-xl focus:bg-cyan-500/10 focus:px-4 focus:py-2 focus:backdrop-blur"
+      >Skip to content</a
+    >
+
+    {/* ======= Decorative holographic grid & scanlines background ======= */}
+    <div aria-hidden="true" class="pointer-events-none fixed inset-0 -z-10">
+      {/* Layer 1: subtle vignette */}
+      <div class="absolute inset-0 bg-gradient-to-b from-[#0b1026] via-[#050914] to-[#050914]" />
+      {/* Layer 2: animated radial glows */}
+      <div class="absolute -top-24 left-1/2 aspect-square w-[70rem] -translate-x-1/2 rounded-full bg-cyan-500/10 blur-3xl" />
+      <div class="absolute bottom-[-20rem] right-[-10rem] aspect-square w-[50rem] rounded-full bg-indigo-500/10 blur-3xl" />
+      {/* Layer 3: grid lines (CSS gradients) */}
+      <div
+        class="absolute inset-0 opacity-[0.16]"
+        style="
+          background-image:
+            linear-gradient(to right, rgba(56,189,248,0.12) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(56,189,248,0.12) 1px, transparent 1px);
+          background-size: 48px 48px;
+          mask-image: radial-gradient(ellipse at center, black 45%, transparent 80%);
+          -webkit-mask-image: radial-gradient(ellipse at center, black 45%, transparent 80%);
+        "
+      />
+      {/* Layer 4: scanlines */}
+      <div
+        class="absolute inset-0 opacity-[0.05] mix-blend-soft-light"
+        style="
+          background-image: linear-gradient(rgba(255,255,255,0.6) 1px, transparent 1px);
+          background-size: 100% 3px;
+        "
+      />
+    </div>
+
+    {/* ======= Top Navigation ======= */}
+    <header
+      class="sticky top-0 z-40 border-b border-cyan-300/10 bg-[#050914]/70 backdrop-blur-xl supports-[backdrop-filter]:bg-[#050914]/50"
+    >
+      <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-6">
+        {/* Brand */}
+        <a href="/" class="group inline-flex items-center gap-3">
+          <span
+            class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-cyan-400/30 bg-cyan-400/10 shadow-[0_0_20px_rgba(34,211,238,0.25)] ring-1 ring-cyan-400/30"
+            aria-hidden="true"
+          >
+            {/* Simple "orb" logo */}
+            <svg viewBox="0 0 24 24" class="h-5 w-5">
+              <circle cx="12" cy="12" r="8" class="fill-cyan-300/90" />
+              <circle cx="12" cy="12" r="3" class="fill-cyan-50/90" />
+            </svg>
+          </span>
+          <span class="font-semibold tracking-wide text-cyan-200 group-hover:text-cyan-100">
+            {SITE_NAME}
+          </span>
+        </a>
+
+        {/* Nav links */}
+        <nav aria-label="Primary" class="hidden gap-1 md:flex">
+          {[
+            { href: "/", label: "Home" },
+            { href: "/projects", label: "Projects" },
+            { href: "/resume", label: "Resume" },
+            { href: "/about", label: "About" },
+            { href: "/contact", label: "Contact" },
+          ].map((item) => (
+            <a
+              href={item.href}
+              class="rounded-xl px-3 py-2 text-sm/6 text-slate-300 outline-none transition
+                     hover:text-cyan-100 focus-visible:ring-2 focus-visible:ring-[--ring]
+                     data-[active=true]:text-cyan-200 data-[active=true]:ring-1 data-[active=true]:ring-cyan-400/30 data-[active=true]:bg-cyan-400/10"
+              data-active={Astro.url?.pathname === item.href}
+            >
+              {item.label}
+            </a>
+          ))}
+        </nav>
+
+        {/* Theme toggle */}
+        <button
+          type="button"
+          class="group inline-flex items-center gap-2 rounded-xl border border-cyan-300/20 bg-cyan-300/5 px-3 py-1.5 text-sm text-slate-300 outline-none transition hover:bg-cyan-300/10 focus-visible:ring-2 focus-visible:ring-[--ring]"
+          aria-label="Toggle theme"
+          onClick="(function(btn){
+            const root = document.documentElement;
+            const next = (root.dataset.theme === 'dark') ? 'light' : 'dark';
+            root.dataset.theme = next;
+            root.style.colorScheme = next === 'dark' ? 'dark' : 'light';
+            try { localStorage.setItem('theme', next); } catch(e) {}
+            btn?.blur();
+          })(this)"
+        >
+          <span class="i-lucide-sun hidden [html[data-theme='light']_&]:inline">☀️</span>
+          <span class="[html[data-theme='dark']_&]:inline">🌙</span>
+          <span class="sr-only">Toggle theme</span>
+        </button>
+      </div>
+    </header>
+
+    {/* ======= Main Content ======= */}
+    <main id="main" class="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-12">
+      {/* Page heading (visually elevated) — optional; pages can provide their own */}
+      {title && (
+        <div class="mb-8">
+          <h1
+            class="text-balance bg-gradient-to-r from-cyan-200 to-indigo-200 bg-clip-text text-3xl font-extrabold text-transparent sm:text-4xl"
+          >
+            {title}
+          </h1>
+          {description && (
+            <p class="mt-2 max-w-2xl text-pretty text-sm text-slate-400">
+              {description}
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Page content slot */}
+      <slot />
+    </main>
+
+    {/* ======= Footer ======= */}
+    <footer class="border-t border-cyan-300/10">
+      <div class="mx-auto max-w-7xl px-4 py-10 md:px-6">
+        <div class="grid gap-6 md:grid-cols-2">
+          <div class="space-y-2">
+            <p class="text-sm text-slate-400">
+              <span class="font-semibold text-cyan-200">{SITE_NAME}</span> — “Analyzing patterns, engineering solutions, shaping the future.”
+            </p>
+            <p class="text-xs text-slate-500">
+              © {new Date().getFullYear()} {SITE_NAME}. All rights reserved.
+            </p>
+          </div>
+          <div class="flex items-center justify-start gap-4 md:justify-end">
+            <a
+              href="mailto:zeshan@example.com"
+              class="rounded-md px-2 py-1 text-sm text-slate-400 underline-offset-4 hover:text-cyan-100 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--ring]"
+              >Email</a
+            >
+            <a
+              href="https://github.com/zeshanbasaran"
+              class="rounded-md px-2 py-1 text-sm text-slate-400 underline-offset-4 hover:text-cyan-100 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--ring]"
+              rel="me"
+              >GitHub</a
+            >
+            <a
+              href="https://www.linkedin.com/in/zeshan-basaran"
+              class="rounded-md px-2 py-1 text-sm text-slate-400 underline-offset-4 hover:text-cyan-100 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--ring]"
+              rel="me"
+              >LinkedIn</a
+            >
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    {/* ======= Reduced Motion Guard ======= */}
+    <style is:global>
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+      }
+      /* Light/Dark theming (optional if using Tailwind's class strategy) */
+      :root[data-theme='dark'] { --bg: #050914; --fg: #e2e8f0; }
+      :root[data-theme='light'] { --bg: #f8fafc; --fg: #0b1220; }
+      html { background-color: var(--bg); color: var(--fg); }
+    </style>
+
+    {/* ======= NoScript Notice (optional) ======= */}
+    <noscript>
+      <div
+        style="position: fixed; inset: auto 0 0 0; background: #0b1220; color: #d1d5db; padding: 0.75rem 1rem; text-align: center; font: 14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, 'Helvetica Neue', Arial;"
+      >
+        JavaScript is disabled. This site still works, but animations and some
+        interactive visualizations are unavailable.
+      </div>
+    </noscript>
+
+    {/* ======= Analytics Hook (replace with your provider or remove) ======= */}
+    {/* <script src="https://your-analytics.js" defer></script> */}
+  </body>
+</html>

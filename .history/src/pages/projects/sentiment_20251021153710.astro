@@ -1,0 +1,255 @@
+---
+import ProjectLayout from "../../layouts/ProjectLayout.astro";
+
+const title = "Movie Review Sentiment Analysis (NLP)";
+const description =
+  "Binary sentiment classifier for movie reviews using classic NLP features (Bag-of-Words / TF-IDF) and scikit-learn models (LogReg, SVM, Naive Bayes). Includes clean data pipeline, evaluation reports, and a simple CLI/notebook for inference.";
+
+const screenshots = [
+  // If you add images to your repo later, point to their raw URLs here.
+  // { id: "pipeline", src: "https://raw.githubusercontent.com/zeshanbasaran/movieSentimentAnalysis/main/docs/pipeline.png", title: "Pipeline", caption: "Data → Vectorize → Train → Evaluate → Save model." },
+  // { id: "report",   src: "https://raw.githubusercontent.com/zeshanbasaran/movieSentimentAnalysis/main/docs/report.png",   title: "Metrics",  caption: "Confusion matrix, ROC-AUC, PR curve." },
+];
+
+const card =
+  "rounded-2xl ring-1 ring-white/10 bg-slate-900/50 p-6 backdrop-blur shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]";
+---
+
+<ProjectLayout
+  title={title}
+  description={description}
+  repoOwner="zeshanbasaran"
+  repoName="movieSentimentAnalysis"
+  {screenshots}
+>
+  <!-- CTAs -->
+  <a
+    slot="cta"
+    href="https://github.com/zeshanbasaran/movieSentimentAnalysis"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="inline-flex items-center gap-2 rounded-2xl border border-cyan-400/40 bg-cyan-500/10 px-4 py-2 text-sm hover:bg-cyan-500/20"
+  >
+    View on GitHub
+  </a>
+  <a
+    slot="quicklink"
+    href="#quickstart"
+    class="inline-flex items-center gap-2 rounded-2xl border border-fuchsia-400/40 bg-fuchsia-500/10 px-4 py-2 text-sm hover:bg-fuchsia-500/20"
+  >
+    Quickstart
+  </a>
+
+  <!-- =================== Top 3 Cards (Overview | Stack | Capabilities) =================== -->
+
+  <!-- Overview -->
+  <div slot="overview" class={`md:col-span-4 ${card} h-full transition-transform hover:-translate-y-0.5`}>
+    <div class="flex items-start gap-3">
+      <div class="rounded-xl bg-cyan-500/10 ring-1 ring-cyan-400/20 p-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-cyan-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h16M4 12h16M4 17h10"/>
+        </svg>
+      </div>
+      <h3 class="text-2xl font-semibold tracking-tight">Overview</h3>
+    </div>
+
+    <div class="mt-3 grid gap-6 md:grid-cols-12">
+      <p class="text-slate-300 leading-relaxed md:col-span-8 max-w-none">
+        Compact end-to-end sentiment analysis project for movie reviews. Cleans and tokenizes text, builds
+        vectorizers (Count/TF-IDF), and trains scikit-learn classifiers. Ships with evaluation utilities (confusion
+        matrix, ROC-AUC, PR), cross-validation, and an inference entrypoint for quick predictions. Designed to be
+        readable and easy to extend.
+      </p>
+      <div class="md:col-span-4">
+        <div class="mt-5 h-px bg-gradient-to-r from-white/10 via-white/5 to-transparent md:hidden"></div>
+        <ul class="mt-4 text-sm text-slate-300 space-y-1">
+          <li><span class="text-slate-400">License:</span> MIT</li>
+          <li><span class="text-slate-400">Runs:</span> Python 3.9+</li>
+          <li><span class="text-slate-400">ML:</span> scikit-learn</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stack -->
+  <div slot="stack" class={`md:col-span-4 ${card} h-full transition-transform hover:-translate-y-0.5`}>
+    <div class="flex items-start gap-3">
+      <div class="rounded-xl bg-fuchsia-500/10 ring-1 ring-fuchsia-400/20 p-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-fuchsia-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16M8 4v16m8-16v16"/>
+        </svg>
+      </div>
+      <h3 class="text-2xl font-semibold tracking-tight">Stack</h3>
+    </div>
+
+    <div class="mt-3 grid gap-6 md:grid-cols-12 items-start">
+      <!-- LEFT: repo languages -->
+      <div class="md:col-span-5 order-2 md:order-1">
+        <p class="text-xs uppercase tracking-wider text-slate-400">Repo languages</p>
+        <div data-lang-bars class="mt-2 space-y-2"></div>
+      </div>
+
+      <!-- RIGHT: python libs -->
+      <div class="md:col-span-7 order-1 md:order-2">
+        <div class="flex items-center gap-2">
+          <span class="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium text-emerald-200">
+            🐍 Python libraries
+          </span>
+        </div>
+
+        <ul class="mt-3 grid grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-2 text-sm">
+          {[
+            "Python",
+            "pandas",
+            "NumPy",
+            "scikit-learn",
+            "NLTK",
+            "Matplotlib",
+            "joblib",
+          ].map(lib => (
+            <li class="flex items-center gap-2">
+              <span class="mt-0.5 h-1.5 w-1.5 rounded-full bg-emerald-400/70"></span>
+              <span class="text-slate-200">{lib}</span>
+            </li>
+          ))}
+        </ul>
+
+        <div class="mt-4 text-xs text-slate-400">
+          Vectorizers: <span class="text-slate-300">CountVectorizer, TfidfVectorizer</span> • Models:
+          <span class="text-slate-300">LogisticRegression, LinearSVC, MultinomialNB</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Capabilities -->
+  <div slot="capabilities" class={`md:col-span-4 ${card} h-full transition-transform hover:-translate-y-0.5`}>
+    <div class="flex items-start gap-3">
+      <div class="rounded-xl bg-emerald-500/10 ring-1 ring-emerald-400/20 p-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8l2 2-2 2m12-4l2 2-2 2M9 5l3 3 3-3M9 19l3-3 3 3"/>
+        </svg>
+      </div>
+      <h3 class="text-2xl font-semibold tracking-tight">Key Capabilities</h3>
+    </div>
+
+    <ul class="mt-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-6 gap-y-2 text-sm text-slate-300">
+      <li class="flex items-start gap-2"><span class="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-400/70"></span> Clean/normalize text: lowercasing, punctuation/stopword handling.</li>
+      <li class="flex items-start gap-2"><span class="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-400/70"></span> Configurable n-grams and min_df for vocab control.</li>
+      <li class="flex items-start gap-2"><span class="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-400/70"></span> Models: Logistic Regression, Linear SVM, Multinomial NB.</li>
+      <li class="flex items-start gap-2"><span class="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-400/70"></span> Cross-validation & GridSearchCV helpers.</li>
+      <li class="flex items-start gap-2"><span class="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-400/70"></span> Metrics: accuracy, precision/recall/F1, ROC-AUC, PR curve.</li>
+      <li class="flex items-start gap-2"><span class="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-400/70"></span> Model persistence (joblib) + CLI/notebook inference.</li>
+    </ul>
+  </div>
+
+  <!-- =================== Feature Grid =================== -->
+  <div slot="feature-a" class={`${card} relative overflow-hidden transition-transform hover:-translate-y-0.5`}>
+    <div class="pointer-events-none absolute inset-0 bg-gradient-to-tr from-cyan-500/5 via-transparent to-transparent"></div>
+    <div class="flex items-center gap-3">
+      <span class="rounded-lg bg-cyan-500/10 ring-1 ring-cyan-400/20 p-1.5">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-cyan-300" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h16M4 12h8M4 17h12"/></svg>
+      </span>
+      <h3 class="text-lg font-semibold">Data Pipeline</h3>
+    </div>
+    <ul class="mt-3 list-disc pl-5 text-sm text-slate-300 space-y-1">
+      <li>CSV loader with train/val/test split and reproducible seeds.</li>
+      <li>Text cleaning utilities + optional lemmatization.</li>
+    </ul>
+  </div>
+
+  <div slot="feature-b" class={`${card} relative overflow-hidden transition-transform hover:-translate-y-0.5`}>
+    <div class="pointer-events-none absolute inset-0 bg-gradient-to-tr from-fuchsia-500/5 via-transparent to-transparent"></div>
+    <div class="flex items-center gap-3">
+      <span class="rounded-lg bg-fuchsia-500/10 ring-1 ring-fuchsia-400/20 p-1.5">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-fuchsia-300" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12h18M12 3v18"/></svg>
+      </span>
+      <h3 class="text-lg font-semibold">Vectorize & Train</h3>
+    </div>
+    <ul class="mt-3 list-disc pl-5 text-sm text-slate-300 space-y-1">
+      <li>CountVectorizer / TfidfVectorizer with n-gram ranges.</li>
+      <li>Fit LogisticRegression / LinearSVC / MultinomialNB baselines.</li>
+    </ul>
+  </div>
+
+  <div slot="feature-c" class={`${card} relative overflow-hidden transition-transform hover:-translate-y-0.5`}>
+    <div class="pointer-events-none absolute inset-0 bg-gradient-to-tr from-emerald-500/5 via-transparent to-transparent"></div>
+    <div class="flex items-center gap-3">
+      <span class="rounded-lg bg-emerald-500/10 ring-1 ring-emerald-400/20 p-1.5">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-300" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v12m6-6H6"/></svg>
+      </span>
+      <h3 class="text-lg font-semibold">Evaluate & Explain</h3>
+    </div>
+    <ul class="mt-3 list-disc pl-5 text-sm text-slate-300 space-y-1">
+      <li>Classification report, confusion matrix, ROC-AUC/PR-AUC.</li>
+      <li>Top weighted features (coef_ / log odds) for interpretability.</li>
+    </ul>
+  </div>
+
+  <div slot="feature-d" class={`${card} relative overflow-hidden transition-transform hover:-translate-y-0.5`}>
+    <div class="pointer-events-none absolute inset-0 bg-gradient-to-tr from-indigo-500/5 via-transparent to-transparent"></div>
+    <div class="flex items-center gap-3">
+      <span class="rounded-lg bg-indigo-500/10 ring-1 ring-indigo-400/20 p-1.5">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-300" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16v12H4zM8 10h8v2H8z"/></svg>
+      </span>
+      <h3 class="text-lg font-semibold">Notebook & CLI</h3>
+    </div>
+    <ul class="mt-3 list-disc pl-5 text-sm text-slate-300 space-y-1">
+      <li>Jupyter notebook for EDA + experiments.</li>
+      <li>Simple CLI to load saved model and score new text.</li>
+    </ul>
+  </div>
+
+  <!-- =================== Quickstart =================== -->
+  <div slot="quickstart" class="mt-4 grid grid-cols-1 gap-6 md:grid-cols-2">
+    <div class={card}>
+      <h3 class="font-semibold">1) Install Dependencies</h3>
+      <pre class="mt-3 overflow-x-auto rounded-xl bg-black/60 p-4 text-sm"><code>python -m venv venv
+# Windows
+venv\Scripts\activate
+# macOS/Linux
+source venv/bin/activate
+
+pip install -r requirements.txt</code></pre>
+    </div>
+
+    <div class={card}>
+      <h3 class="font-semibold">2) Prepare Data</h3>
+      <ul class="mt-2 list-disc pl-5 text-sm text-slate-300 space-y-1">
+        <li>Place a CSV with columns like <code>text</code> and <code>label</code> under <code>data/</code> (e.g., IMDB 1k pos / 1k neg).</li>
+        <li>Labels can be <code>0/1</code> or <code>negative/positive</code>.</li>
+      </ul>
+      <pre class="mt-3 overflow-x-auto rounded-xl bg-black/60 p-4 text-sm"><code># Example (pseudopath)
+data/imdb_2k.csv  # text,label</code></pre>
+    </div>
+
+    <div class={card}>
+      <h3 class="font-semibold">3) Train a Model</h3>
+      <p class="mt-2 text-sm text-slate-300">Run a baseline TF-IDF + Logistic Regression:</p>
+      <pre class="mt-3 overflow-x-auto rounded-xl bg-black/60 p-4 text-sm"><code># Example script call if provided
+python src/train.py \
+  --data data/imdb_2k.csv \
+  --vectorizer tfidf --ngram-min 1 --ngram-max 2 --min-df 2 \
+  --model logreg --C 1.0 \
+  --save models/logreg_tfidf.joblib</code></pre>
+    </div>
+
+    <div class={card}>
+      <h3 class="font-semibold">4) Evaluate & Predict</h3>
+      <pre class="mt-3 overflow-x-auto rounded-xl bg-black/60 p-4 text-sm"><code># Evaluate on held-out test set
+python src/eval.py --model models/logreg_tfidf.joblib --data data/imdb_2k.csv
+
+# Single prediction
+python src/predict.py --model models/logreg_tfidf.joblib \
+  --text "This movie was absolutely fantastic!"</code></pre>
+      <p class="mt-2 text-sm text-slate-400">
+        Prefer notebooks? Open <code>notebooks/sentiment.ipynb</code> to explore end-to-end.
+      </p>
+    </div>
+  </div>
+
+  <!-- Footnote -->
+  <p slot="footnote" class="text-xs text-slate-500">
+    Built by Zeshan Basaran • MIT Licensed. This page fetches live GitHub metadata on load.
+  </p>
+</ProjectLayout>
