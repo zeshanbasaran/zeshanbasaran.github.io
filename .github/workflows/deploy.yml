@@ -25,28 +25,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
 
-      - name: Show Node & NPM versions
+      # Work around rollup / npm bug
+      - name: Clean and install
         run: |
-          node -v
-          npm -v
+          rm -rf node_modules package-lock.json
+          npm install --no-optional
 
-      # Sometimes npm ci fails on runners due to optional native deps.
-      # Fall back to npm install so the job doesn't die early.
-      - name: Install deps (try ci, fall back to install)
-        run: |
-          npm ci || npm install
+      - name: Build Astro
+        run: npx astro build
 
-      - name: Verify Astro
-        run: npx astro --version
-
-      - name: Build (verbose)
-        env:
-          NODE_OPTIONS: --max_old_space_size=3072
-        run: npm run build -- --verbose
-
-      - name: Upload Pages artifact
+      - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
