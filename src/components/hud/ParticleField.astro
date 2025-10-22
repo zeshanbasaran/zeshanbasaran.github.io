@@ -8,49 +8,22 @@
  * - “Constellation” link lines between nearby particles
  * - Twinkle + blur options for luminous neon ambience
  * - Respects prefers-reduced-motion (slows, disables twinkle)
- *
- * USAGE
- * -----
- * <ParticleField
- *   density={0.0008}        // particles per pixel (fallback to count)
- *   count={120}             // used if density is 0 or container size unknown
- *   accent="cyan"           // "cyan" | "violet" | "red" | CSS color (#0ff, hsl)
- *   speed={0.6}             // base speed in px/frame @ 60fps
- *   connectDistance={110}   // px threshold for linking lines
- *   dotSize={[1,2.4]}       // [min,max] radius in px
- *   alpha={[0.35,0.9]}      // [min,max] opacity for dots
- *   parallax={0.06}         // how much camera follows pointer (0..1)
- *   repel={0.0}             // 0 (off) .. 1 (strong repel), negative attracts
- *   twinkle={true}          // subtle opacity oscillation
- *   blur={2}                // 0..6 Gaussian blur on dots (expensive)
- *   fpsCap={60}             // clamp FPS to save battery
- *   class="absolute inset-0"// allow positioning with Tailwind
- * />
- *
- * NOTES
- * - If you mount this behind other content, set `pointer-events: none` on it
- *   (default), so your UI remains interactive.
- * - Use inside something with explicit size (e.g., relative parent with height).
- * - For SSR: the canvas is inert until hydrated (script runs on client).
- *
- * ACCESSIBILITY
- * - Decorative only; marked aria-hidden with role="presentation".
- * -----------------------------------------------------------------------------
+ * ----------------------------------------------------------------------------- 
  */
 
 interface Props {
-  density?: number;                // particles per pixel (area-based)
-  count?: number;                  // fallback absolute count
-  accent?: string;                 // theme color or CSS color
-  speed?: number;                  // px per frame @ 60fps baseline
-  connectDistance?: number;        // max dist to draw linking lines
-  dotSize?: [number, number];      // min/max radius
-  alpha?: [number, number];        // min/max dot opacity
-  parallax?: number;               // 0..1 parallax drift toward mouse
-  repel?: number;                  // -1..1 (- attract, + repel)
+  density?: number;
+  count?: number;
+  accent?: string;
+  speed?: number;
+  connectDistance?: number;
+  dotSize?: [number, number];
+  alpha?: [number, number];
+  parallax?: number;
+  repel?: number;
   twinkle?: boolean;
-  blur?: number;                   // CSS blur(px) on dots layer
-  fpsCap?: number;                 // 20..120
+  blur?: number;
+  fpsCap?: number;
   class?: string;
   id?: string;
 }
@@ -100,14 +73,14 @@ const uid = `pf-${Math.random().toString(36).slice(2, 8)}`;
 
 <style>
   :global(:root){
-    --pf-dot: rgba(56,189,248,0.9);  /* default cyan */
+    --pf-dot: rgba(56,189,248,0.9);
     --pf-line: rgba(56,189,248,0.45);
   }
   .pf-root {
-    pointer-events: none;           /* keep UI interactive above */
+    pointer-events: none;
     user-select: none;
     -webkit-user-select: none;
-    isolation: isolate;             /* allow blend modes without leaking */
+    isolation: isolate;
   }
   .pf-canvas {
     width: 100%;
@@ -118,11 +91,9 @@ const uid = `pf-${Math.random().toString(36).slice(2, 8)}`;
   .pf-canvas[data-blur="true"] {
     filter: blur(var(--pf-blur));
   }
-  /* Subtle additive blend for luminous look */
   .pf-layer {
     mix-blend-mode: screen;
   }
-  /* Mask vignette for depth */
   .pf-vignette::after {
     content:"";
     position:absolute; inset:0; pointer-events:none;
@@ -137,7 +108,24 @@ const uid = `pf-${Math.random().toString(36).slice(2, 8)}`;
   role="presentation"
   aria-hidden="true"
 >
-  <canvas class="pf-canvas pf-layer" data-blur={String(blur > 0)} style={`--pf-blur:${blur}px;`}></canvas>
+  <canvas
+    class="pf-canvas pf-layer"
+    data-blur={String(blur > 0)}
+    style={`--pf-blur:${blur}px;`}
+    data-config={JSON.stringify({
+      density,
+      count,
+      speed,
+      connectDistance,
+      dotSize,
+      alpha,
+      parallax,
+      repel,
+      twinkle,
+      blur,
+      fpsCap,
+    })}
+  ></canvas>
 </div>
 
 <script is:raw>
@@ -149,27 +137,11 @@ const uid = `pf-${Math.random().toString(36).slice(2, 8)}`;
     const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
-    // Read props from SSR (reflect as data-* would also work)
     const style = getComputedStyle(root);
     const DOT = style.getPropertyValue('--pf-dot').trim() || 'rgba(56,189,248,0.9)';
     const LINE = style.getPropertyValue('--pf-line').trim() || 'rgba(56,189,248,0.45)';
 
-    // Config synced with SSR defaults. We embed values via data-* on the canvas using inline script below.
-    const cfg = {
-      density: Number(<?= JSON.stringify(density) ?>),
-      count: Number(<?= JSON.stringify(count) ?>),
-      speed: Number(<?= JSON.stringify(speed) ?>),
-      connectDistance: Number(<?= JSON.stringify(connectDistance) ?>),
-      dotSizeMin: Number(<?= JSON.stringify(dotSize[0]) ?>),
-      dotSizeMax: Number(<?= JSON.stringify(dotSize[1]) ?>),
-      alphaMin: Number(<?= JSON.stringify(alpha[0]) ?>),
-      alphaMax: Number(<?= JSON.stringify(alpha[1]) ?>),
-      parallax: Number(<?= JSON.stringify(parallax) ?>),
-      repel: Number(<?= JSON.stringify(repel) ?>),
-      twinkle: <?= JSON.stringify(twinkle) ?>,
-      blur: Number(<?= JSON.stringify(blur) ?>),
-      fpsCap: Math.max(20, Math.min(120, Number(<?= JSON.stringify(fpsCap) ?>))),
-    };
+    const cfg = JSON.parse(canvas.dataset.config || "{}");
 
     const mediaReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (mediaReduced) {
@@ -178,8 +150,7 @@ const uid = `pf-${Math.random().toString(36).slice(2, 8)}`;
       cfg.fpsCap = Math.min(cfg.fpsCap, 40);
     }
 
-    // Canvas sizing (handle DPR + ResizeObserver)
-    let dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1)); // clamp DPR to 2 for perf
+    let dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
     const resize = () => {
       const { clientWidth: w, clientHeight: h } = root;
       const cw = Math.max(1, w);
@@ -190,11 +161,9 @@ const uid = `pf-${Math.random().toString(36).slice(2, 8)}`;
       canvas.style.width = cw + 'px';
       canvas.style.height = ch + 'px';
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      // Recompute target particle count for density
       const area = cw * ch;
       currentTargetCount = cfg.density > 0 ? Math.floor(area * cfg.density) : cfg.count;
       if (!Number.isFinite(currentTargetCount) || currentTargetCount <= 0) currentTargetCount = cfg.count;
-      // Grow/shrink pool gently
       adjustPool(currentTargetCount);
     };
 
@@ -203,7 +172,6 @@ const uid = `pf-${Math.random().toString(36).slice(2, 8)}`;
     window.addEventListener('orientationchange', resize, { passive: true });
     resize();
 
-    // Particle model
     const rand = (a, b) => a + Math.random() * (b - a);
     const lerp = (a, b, t) => a + (b - a) * t;
     const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -216,10 +184,10 @@ const uid = `pf-${Math.random().toString(36).slice(2, 8)}`;
       const spd = rand(cfg.speed * 0.5, cfg.speed * 1.5);
       const vx = Math.cos(angle) * spd;
       const vy = Math.sin(angle) * spd;
-      const r = rand(cfg.dotSizeMin, cfg.dotSizeMax);
-      const baseA = rand(cfg.alphaMin, cfg.alphaMax);
+      const r = rand(cfg.dotSize[0], cfg.dotSize[1]);
+      const baseA = rand(cfg.alpha[0], cfg.alpha[1]);
       const twA = rand(0.6, 1.4);
-      const twF = rand(0.004, 0.012); // frequency
+      const twF = rand(0.004, 0.012);
       return {
         x: Math.random() * w,
         y: Math.random() * h,
@@ -243,7 +211,6 @@ const uid = `pf-${Math.random().toString(36).slice(2, 8)}`;
       }
     }
 
-    // Interaction
     const pointer = { x: 0, y: 0, has: false };
     const onMove = (e) => {
       const rect = root.getBoundingClientRect();
@@ -255,7 +222,6 @@ const uid = `pf-${Math.random().toString(36).slice(2, 8)}`;
     window.addEventListener('pointermove', onMove, { passive: true });
     window.addEventListener('pointerleave', onLeave, { passive: true });
 
-    // Animation loop with FPS cap
     let raf = 0;
     let last = performance.now();
     const frameInterval = 1000 / cfg.fpsCap;
@@ -263,58 +229,50 @@ const uid = `pf-${Math.random().toString(36).slice(2, 8)}`;
     function tick(now) {
       raf = requestAnimationFrame(tick);
       const deltaMs = now - last;
-      if (deltaMs < frameInterval) return; // FPS cap
+      if (deltaMs < frameInterval) return;
       last = now;
 
       const w = canvas.width / dpr, h = canvas.height / dpr;
       ctx.clearRect(0, 0, w, h);
 
-      // Integrate + draw dots
       ctx.save();
       ctx.globalCompositeOperation = 'lighter';
       ctx.fillStyle = DOT;
 
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
-
-        // Parallax drift toward pointer (visual offset)
         let px = p.x, py = p.y;
         if (pointer.has && cfg.parallax > 0) {
-          const dx = (pointer.x - w / 2) / (w / 2); // -1..1
+          const dx = (pointer.x - w / 2) / (w / 2);
           const dy = (pointer.y - h / 2) / (h / 2);
           px += dx * cfg.parallax * 24;
           py += dy * cfg.parallax * 24;
         }
 
-        // Repel/attract force updates velocity slightly
         if (pointer.has && cfg.repel !== 0) {
           const dx = p.x - pointer.x;
           const dy = p.y - pointer.y;
           const dsq = dx*dx + dy*dy + 1e-2;
           const d = Math.sqrt(dsq);
-          const f = (cfg.repel * 0.35) / dsq; // inverse square falloff
+          const f = (cfg.repel * 0.35) / dsq;
           p.vx += (dx / (d+1e-3)) * f * 1000;
           p.vy += (dy / (d+1e-3)) * f * 1000;
         }
 
-        // Integrate
         p.x += p.vx;
         p.y += p.vy;
 
-        // Wrap edges softly
         if (p.x < -20) p.x = w + 20;
         if (p.x > w + 20) p.x = -20;
         if (p.y < -20) p.y = h + 20;
         if (p.y > h + 20) p.y = -20;
 
-        // Twinkle
         let alpha = p.baseA;
         if (cfg.twinkle) {
           p.twPhase += p.twFreq;
           alpha = clamp(p.baseA + Math.sin(p.twPhase) * p.twAmp, 0.05, 1.0);
         }
 
-        // Draw dot
         ctx.globalAlpha = alpha;
         ctx.beginPath();
         ctx.arc(px, py, p.r, 0, Math.PI * 2);
@@ -322,7 +280,6 @@ const uid = `pf-${Math.random().toString(36).slice(2, 8)}`;
       }
       ctx.restore();
 
-      // Draw link lines (O(n^2) naive; ok for light counts; early exit by grid could be added)
       ctx.save();
       ctx.strokeStyle = LINE;
       for (let i = 0; i < particles.length; i++) {
@@ -341,7 +298,7 @@ const uid = `pf-${Math.random().toString(36).slice(2, 8)}`;
           const dx = ax - bx, dy = ay - by;
           const dist = Math.hypot(dx, dy);
           if (dist < cfg.connectDistance) {
-            const t = 1 - (dist / cfg.connectDistance); // fade by distance
+            const t = 1 - (dist / cfg.connectDistance);
             ctx.globalAlpha = t * 0.8;
             ctx.lineWidth = Math.max(0.5, t * 1.25);
             ctx.beginPath();
@@ -354,21 +311,16 @@ const uid = `pf-${Math.random().toString(36).slice(2, 8)}`;
       ctx.restore();
     }
 
-    // Seed initial pool and start
     adjustPool(currentTargetCount);
     raf = requestAnimationFrame(tick);
 
-    // Cleanup on unmount / hot-reload
     const stop = () => {
       cancelAnimationFrame(raf);
       ro.disconnect();
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerleave', onLeave);
     };
-    // Astro dev/hmr support
-    // @ts-ignore
     if (import.meta && import.meta.hot) {
-      // @ts-ignore
       import.meta.hot?.dispose?.(stop);
     }
     window.addEventListener('pagehide', stop, { once: true });
